@@ -17,7 +17,7 @@ $ npm i @stifani/smb2
 ```js
 import SmbConnection from "@stifani/smb2";
 
-const connection = new Connection(host);
+const connection = new SmbConnection(host);
 const session = await connection.authenticate({
   domain: "domain",
   username,
