@@ -1,0 +1,40 @@
+{
+  "name": "@stifani/smb2",
+  "description": "A SMB2 implementation in TypeScript",
+  "repository": "https://github.com/ardean/smb2",
+  "bugs": "https://github.com/ardean/smb2/issues",
+  "version": "0.1.1",
+  "author": "ardean",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon",
+    "build": "rm -rf dist && tsc",
+    "lint": "tslint --project ."
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "smb2",
+    "smb",
+    "cifs",
+    "samba",
+    "server-message-block",
+    "windows",
+    "file-sharing"
+  ],
+  "dependencies": {
+    "moment-timezone": "^0.5.28",
+    "ntlm": "~0.1.1"
+  },
+  "devDependencies": {
+    "@types/moment-timezone": "^0.5.12",
+    "@types/node": "^13.7.4",
+    "nodemon": "^2.0.2",
+    "ts-node": "^8.6.2",
+    "tslint": "^6.1.0",
+    "typescript": "^3.8.2"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "watch": [
+    "./src",
+    "./demo"
+  ],
+  "ext": "ts",
+  "exec": "node -r ts-node/register ./demo"
+}

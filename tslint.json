@@ -1,0 +1,23 @@
+{
+  "extends": [
+    "tslint:recommended"
+  ],
+  "rules": {
+    "ordered-imports": false,
+    "eofline": false,
+    "member-access": false,
+    "object-literal-sort-keys": false,
+    "no-console": false,
+    "no-shadowed-variable": false,
+    "trailing-comma": false,
+    "max-line-length": false,
+    "curly": false,
+    "interface-name": false,
+    "variable-name": false,
+    "arrow-parens": false,
+    "member-ordering": false,
+    "no-empty": false,
+    "no-unused-expression": false,
+    "no-bitwise": false
+  }
+}
