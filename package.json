@@ -3,7 +3,7 @@
   "description": "A SMB2 implementation in TypeScript",
   "repository": "https://github.com/ardean/smb2",
   "bugs": "https://github.com/ardean/smb2/issues",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "author": "ardean",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -26,8 +26,7 @@
     "file-sharing"
   ],
   "dependencies": {
-    "moment-timezone": "^0.5.28",
-    "ntlm": "~0.1.1"
+    "moment-timezone": "^0.5.28"
   },
   "devDependencies": {
     "@types/moment-timezone": "^0.5.12",

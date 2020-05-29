@@ -6,7 +6,6 @@
 [![NPM Version](https://img.shields.io/npm/v/@stifani/smb2.svg)](https://npmjs.org/package/@stifani/smb2)
 [![NPM Downloads](https://img.shields.io/npm/dm/@stifani/smb2.svg)](https://npmjs.org/package/@stifani/smb2)
 [![License](https://img.shields.io/npm/l/@stifani/smb2.svg)](LICENSE.md)
-[![CircleCI](https://circleci.com/gh/ardean/smb2.svg?style=svg)](https://circleci.com/gh/ardean/smb2)
 
 ## Installation
 ```sh
@@ -14,12 +13,12 @@ $ npm i @stifani/smb2
 ```
 
 ## Usage
-```js
-import SmbConnection from "@stifani/smb2";
+```ts
+import smb2 from "../src";
 
-const connection = new SmbConnection(host);
-const session = await connection.authenticate({
-  domain: "domain",
+const client = new smb2.Client(host);
+const session = await client.authenticate({
+  domain,
   username,
   password
 });
@@ -31,10 +30,15 @@ console.log(entries);
 
 ## Features
 
+### Client
 - watch shares for file and directory changes
 - create, read & remove files
 - create, list & remove directories
 - check directory/file exists
+
+## WIP
+- SMB
+- Server
 
 ## License
 
