@@ -1,9 +1,9 @@
 import Tree from "./Tree";
+import ntlmv2 from "ntlmv2";
 import Client from "./Client";
 import { EventEmitter } from "events";
 import Dialect from "../protocols/smb2/Dialect";
 import Header from "../protocols/smb2/Header";
-import * as ntlmUtil from "../protocols/ntlm/util";
 import PacketType from "../protocols/smb2/PacketType";
 
 export interface AuthenticateOptions {
@@ -68,16 +68,16 @@ class Session extends EventEmitter {
     });
     const sessionSetupResponse = await this.request(
       { type: PacketType.SessionSetup },
-      { buffer: ntlmUtil.serializeNegotiationMessage(this.client.host, options.domain) }
+      { buffer: ntlmv2.serializeNegotiationMessage(this.client.host, options.domain) }
     );
     this._id = sessionSetupResponse.header.sessionId;
 
-    const challengeMessage = ntlmUtil.parseChallengeMessage(sessionSetupResponse.body.buffer as Buffer);
+    const challengeMessage = ntlmv2.parseChallengeMessage(sessionSetupResponse.body.buffer as Buffer);
 
     await this.request(
       { type: PacketType.SessionSetup },
       {
-        buffer: ntlmUtil.serializeAuthenticationMessage(
+        buffer: ntlmv2.serializeAuthenticationMessage(
           options.username,
           this.client.host,
           options.domain,

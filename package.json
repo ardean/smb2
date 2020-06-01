@@ -26,7 +26,9 @@
     "file-sharing"
   ],
   "dependencies": {
-    "moment-timezone": "^0.5.28"
+    "dtyp": "^0.1.2",
+    "moment-timezone": "^0.5.28",
+    "ntlmv2": "^0.1.1"
   },
   "devDependencies": {
     "@types/moment-timezone": "^0.5.12",

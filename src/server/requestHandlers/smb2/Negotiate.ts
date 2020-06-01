@@ -1,7 +1,7 @@
+import dtyp from "dtyp";
 import moment from "moment-timezone";
 import Request from "../../Smb2Request";
 import Response from "../../Smb2Response";
-import * as dtypUtil from "../../../protocols/dtyp/util";
 import Smb2Dialect from "../../../protocols/smb2/Dialect";
 import StatusCode from "../../../protocols/smb2/StatusCode";
 import Capability from "../../../protocols/smb2/Capability";
@@ -34,8 +34,8 @@ export default (req: Request, res: Response) => {
     maxTransactSize: 0x00100000,
     maxReadSize: 0x00100000,
     maxWriteSize: 0x00100000,
-    systemTime: dtypUtil.serializeFiletime(moment().toDate()),
-    serverStartTime: dtypUtil.serializeFiletime(req.server.startDate),
+    systemTime: dtyp.serializeFiletime(moment().toDate()),
+    serverStartTime: dtyp.serializeFiletime(req.server.startDate),
     securityBufferOffset: headerSize + 64,
     securityBufferLength: securityBuffer.length,
     reserved2: 0,

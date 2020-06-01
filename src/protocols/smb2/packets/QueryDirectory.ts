@@ -1,6 +1,6 @@
+import dtyp from "dtyp";
 import * as util from "../../util";
 import Structure from "../../Structure";
-import * as dtypUtil from "../../dtyp/util";
 import FileAttribute from "../FileAttribute";
 import * as structureUtil from "../../structureUtil";
 import DirectoryEntry from "../../../models/DirectoryEntry";
@@ -73,16 +73,16 @@ const parseDirectoryEntry = (entryBuffer: Buffer): DirectoryEntry => {
   const index = entryBuffer.readUInt32LE(offset);
   offset += 4;
 
-  const creationTime = dtypUtil.parseFiletime(entryBuffer.slice(offset, offset + 8));
+  const creationTime = dtyp.parseFiletime(entryBuffer.slice(offset, offset + 8));
   offset += 8;
 
-  const lastAccessTime = dtypUtil.parseFiletime(entryBuffer.slice(offset, offset + 8));
+  const lastAccessTime = dtyp.parseFiletime(entryBuffer.slice(offset, offset + 8));
   offset += 8;
 
-  const lastWriteTime = dtypUtil.parseFiletime(entryBuffer.slice(offset, offset + 8));
+  const lastWriteTime = dtyp.parseFiletime(entryBuffer.slice(offset, offset + 8));
   offset += 8;
 
-  const changeTime = dtypUtil.parseFiletime(entryBuffer.slice(offset, offset + 8));
+  const changeTime = dtyp.parseFiletime(entryBuffer.slice(offset, offset + 8));
   offset += 8;
 
   const fileSize = entryBuffer.readBigUInt64LE(offset);

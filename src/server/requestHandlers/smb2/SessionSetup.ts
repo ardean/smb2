@@ -2,16 +2,18 @@ import os from "os";
 import moment from "moment-timezone";
 import Request from "../../Smb2Request";
 import Response from "../../Smb2Response";
-import * as ntlmUtil from "../../../protocols/ntlm/util";
 import StatusCode from "../../../protocols/smb2/StatusCode";
 import SessionFlag from "../../../protocols/smb2/SessionFlag";
-import NegotiateFlag from "../../../protocols/ntlm/NegotiateFlag";
-import NtlmMessageType from "../../../protocols/ntlm/MessageType";
-import AttributeValueId from "../../../protocols/ntlm/attributeValue/AttributeValueId";
+
+import ntlmv2, {
+  MessageType as NtlmMessageType,
+  NegotiateFlag,
+  AttributeValueId
+} from "ntlmv2";
 
 export default (req: Request, res: Response) => {
   const buffer = req.body.buffer as Buffer;
-  const messageType = ntlmUtil.parseMessageType(buffer);
+  const messageType = ntlmv2.parseMessageType(buffer);
   if (messageType === NtlmMessageType.Negotiation) {
     handleNegotiationRequest(req, res);
   } else if (messageType === NtlmMessageType.Authentication) {
@@ -21,7 +23,7 @@ export default (req: Request, res: Response) => {
 
 const handleNegotiationRequest = (req: Request, res: Response) => {
   const buffer = req.body.buffer as Buffer;
-  const negotiationMessage = ntlmUtil.parseNegotiationMessage(buffer);
+  const negotiationMessage = ntlmv2.parseNegotiationMessage(buffer);
 
   if ((negotiationMessage.negotiateFlags & NegotiateFlag.ExtendedSessionSecurity) > 0) {
     req.client.useExtendedSessionSecurity = true;
@@ -47,9 +49,9 @@ const handleNegotiationRequest = (req: Request, res: Response) => {
     value: moment().toDate()
   }];
 
-  const serverChallenge = ntlmUtil.generateServerChallenge();
+  const serverChallenge = ntlmv2.generateServerChallenge();
   req.client.serverChallenge = serverChallenge;
-  const challengeMessage = ntlmUtil.serializeChallengeMessage(hostname, targetInfo, ntlmChallengeNegotiationFlags, serverChallenge);
+  const challengeMessage = ntlmv2.serializeChallengeMessage(hostname, targetInfo, ntlmChallengeNegotiationFlags, serverChallenge);
 
   req.client.session = req.server.createSession();
 
@@ -66,7 +68,7 @@ const handleNegotiationRequest = (req: Request, res: Response) => {
 
 const handleAuthenticationRequest = (req: Request, res: Response) => {
   const buffer = req.body.buffer as Buffer;
-  const authenticationMessage = ntlmUtil.parseAuthenticationMessage(buffer);
+  const authenticationMessage = ntlmv2.parseAuthenticationMessage(buffer);
 
   let authenticated = false;
   const isRequestingAnonymous = (authenticationMessage.negotiateFlags & NegotiateFlag.Anonymous) > 0;
@@ -88,10 +90,10 @@ const handleAuthenticationRequest = (req: Request, res: Response) => {
     }
 
     if (req.client.useExtendedSessionSecurity) {
-      if (ntlmUtil.isExtendedSessionSecurityLmResponse(authenticationMessage.lmResponse)) {
+      if (ntlmv2.isExtendedSessionSecurityLmResponse(authenticationMessage.lmResponse)) {
         throw new Error(`not_yet_implemented`);
       } else {
-        authenticated = ntlmUtil.matchPasswordV2(
+        authenticated = ntlmv2.matchExtendedSessionSecurityPasswordV2(
           user.password,
           req.client.serverChallenge,
           authenticationMessage.lmResponse,
@@ -101,7 +103,7 @@ const handleAuthenticationRequest = (req: Request, res: Response) => {
         );
       }
     } else {
-      authenticated = ntlmUtil.matchPassword(
+      authenticated = ntlmv2.matchPassword(
         user.password,
         req.client.serverChallenge,
         authenticationMessage.lmResponse,
