@@ -2,12 +2,12 @@ import File from "./File";
 import Session from "./Session";
 import Directory from "./Directory";
 import { EventEmitter } from "events";
-import Header from "../protocol/smb2/Header";
-import * as util from "../protocol/util";
-import Response from "../protocol/smb2/Response";
-import PacketType from "../protocol/smb2/PacketType";
-import DirectoryAccess from "../protocol/smb2/DirectoryAccess";
-import FilePipePrinterAccess from "../protocol/smb2/FilePipePrinterAccess";
+import Header from "../protocols/smb2/Header";
+import * as util from "../protocols/util";
+import Response from "../protocols/smb2/Response";
+import PacketType from "../protocols/smb2/PacketType";
+import DirectoryAccess from "../protocols/smb2/DirectoryAccess";
+import FilePipePrinterAccess from "../protocols/smb2/FilePipePrinterAccess";
 
 interface Tree {
   on(event: "connect" | "disconnect", callback: (tree: Tree) => void): this;

@@ -1,31 +1,132 @@
+import os from "os";
+import moment from "moment-timezone";
 import Request from "../../Smb2Request";
 import Response from "../../Smb2Response";
-import * as ntlm from "../../../protocol/ntlm/util";
-import StatusCode from "../../../protocol/smb2/StatusCode";
-import NegotiateFlag from "../../../protocol/ntlm/NegotiateFlag";
+import * as ntlmUtil from "../../../protocols/ntlm/util";
+import StatusCode from "../../../protocols/smb2/StatusCode";
+import SessionFlag from "../../../protocols/smb2/SessionFlag";
+import NegotiateFlag from "../../../protocols/ntlm/NegotiateFlag";
+import NtlmMessageType from "../../../protocols/ntlm/MessageType";
+import AttributeValueId from "../../../protocols/ntlm/attributeValue/AttributeValueId";
 
 export default (req: Request, res: Response) => {
-  // console.log(ntlm);
-  // console.log(req.body);
-  // console.log();
-  console.log("SessionSetup");
+  const buffer = req.body.buffer as Buffer;
+  const messageType = ntlmUtil.parseMessageType(buffer);
+  if (messageType === NtlmMessageType.Negotiation) {
+    handleNegotiationRequest(req, res);
+  } else if (messageType === NtlmMessageType.Authentication) {
+    handleAuthenticationRequest(req, res);
+  }
+};
 
-  const decodedNtlmNegotiation = ntlm.decodeNegotiationMessage(req.body.buffer as Buffer);
-  // console.log(ntlmData);
+const handleNegotiationRequest = (req: Request, res: Response) => {
+  const buffer = req.body.buffer as Buffer;
+  const negotiationMessage = ntlmUtil.parseNegotiationMessage(buffer);
 
-  const ntlmChallengeNegotiationFlags = syncNegotiationFlags(decodedNtlmNegotiation.negotiateFlags);
-  const encodedNtlmChallenge = ntlm.encodeChallengeMessage(ntlmChallengeNegotiationFlags);
+  if ((negotiationMessage.negotiateFlags & NegotiateFlag.ExtendedSessionSecurity) > 0) {
+    req.client.useExtendedSessionSecurity = true;
+  }
 
-  // console.log(encodedNtlmChallenge.toString("hex"));
-  res.status(StatusCode.MoreProcessingRequired); // first session setup request (second success)
-  res.set("clientId", req.header.clientId);
+  const ntlmChallengeNegotiationFlags = syncNegotiationFlags(negotiationMessage.negotiateFlags);
+
+  const hostname = os.hostname();
+  const targetInfo = [{
+    id: AttributeValueId.NetBiosDomainName,
+    value: hostname
+  }, {
+    id: AttributeValueId.NetBiosComputerName,
+    value: hostname
+  }, {
+    id: AttributeValueId.DnsDomainName,
+    value: hostname
+  }, {
+    id: AttributeValueId.DnsComputerName,
+    value: hostname
+  }, {
+    id: AttributeValueId.Timestamp,
+    value: moment().toDate()
+  }];
+
+  const serverChallenge = ntlmUtil.generateServerChallenge();
+  req.client.serverChallenge = serverChallenge;
+  const challengeMessage = ntlmUtil.serializeChallengeMessage(hostname, targetInfo, ntlmChallengeNegotiationFlags, serverChallenge);
+
+  req.client.session = req.server.createSession();
+
+  res.status(StatusCode.MoreProcessingRequired);
 
   res.send({
     structureSize: 9,
     sessionFlags: 0,
     securityBufferOffset: 72,
     securityBufferLength: 178,
-    buffer: encodedNtlmChallenge
+    buffer: challengeMessage
+  });
+};
+
+const handleAuthenticationRequest = (req: Request, res: Response) => {
+  const buffer = req.body.buffer as Buffer;
+  const authenticationMessage = ntlmUtil.parseAuthenticationMessage(buffer);
+
+  let authenticated = false;
+  const isRequestingAnonymous = (authenticationMessage.negotiateFlags & NegotiateFlag.Anonymous) > 0;
+
+  if (isRequestingAnonymous) {
+    authenticated = true;
+
+    res.status(StatusCode.Success);
+    sendEmptyBody(res, {
+      sessionFlags: SessionFlag.Guest
+    });
+    return;
+  } else {
+    const user = req.server.getUser(authenticationMessage.domain, authenticationMessage.username);
+    if (!user) {
+      res.status(StatusCode.LogonFailure);
+      sendEmptyBody(res);
+      return;
+    }
+
+    if (req.client.useExtendedSessionSecurity) {
+      if (ntlmUtil.isExtendedSessionSecurityLmResponse(authenticationMessage.lmResponse)) {
+        throw new Error(`not_yet_implemented`);
+      } else {
+        authenticated = ntlmUtil.matchPasswordV2(
+          user.password,
+          req.client.serverChallenge,
+          authenticationMessage.lmResponse,
+          authenticationMessage.ntResponse,
+          authenticationMessage.domain,
+          authenticationMessage.username
+        );
+      }
+    } else {
+      authenticated = ntlmUtil.matchPassword(
+        user.password,
+        req.client.serverChallenge,
+        authenticationMessage.lmResponse,
+        authenticationMessage.ntResponse
+      );
+    }
+  }
+
+  if (authenticated) {
+    res.status(StatusCode.Success);
+  } else {
+    res.status(StatusCode.LogonFailure);
+  }
+
+  sendEmptyBody(res);
+};
+
+const sendEmptyBody = (res: Response, overwrite: any = {}) => {
+  res.send({
+    structureSize: 9,
+    sessionFlags: 0,
+    securityBufferOffset: 72,
+    securityBufferLength: 0,
+    buffer: Buffer.allocUnsafe(0),
+    ...overwrite
   });
 };
 
@@ -40,15 +141,13 @@ const syncNegotiationFlags = (negotiationFlags: number) => {
 
   if ((negotiationFlags & NegotiateFlag.UnicodeEncoding) > 0) {
     challengeNegotiateFlags |= NegotiateFlag.UnicodeEncoding;
-  }
-  else if ((negotiationFlags & NegotiateFlag.OemEncoding) > 0) {
+  } else if ((negotiationFlags & NegotiateFlag.OemEncoding) > 0) {
     challengeNegotiateFlags |= NegotiateFlag.OemEncoding;
   }
 
   if ((negotiationFlags & NegotiateFlag.ExtendedSessionSecurity) > 0) {
     challengeNegotiateFlags |= NegotiateFlag.ExtendedSessionSecurity;
-  }
-  else if ((negotiationFlags & NegotiateFlag.LanManagerSessionKey) > 0) {
+  } else if ((negotiationFlags & NegotiateFlag.LanManagerSessionKey) > 0) {
     challengeNegotiateFlags |= NegotiateFlag.LanManagerSessionKey;
   }
 

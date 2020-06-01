@@ -1,14 +1,14 @@
 import crypto from "crypto";
 import { Socket } from "net";
 import { EventEmitter } from "events";
-import Packet from "../protocol/Packet";
-import Request from "../protocol/smb2/Request";
-import Response from "../protocol/smb2/Response";
-import Header from "../protocol/smb2/Header";
-import StatusCode from "../protocol/smb2/StatusCode";
-import Smb2PacketType from "../protocol/smb2/PacketType";
+import Packet from "../protocols/Packet";
+import Header from "../protocols/smb2/Header";
+import Request from "../protocols/smb2/Request";
+import Response from "../protocols/smb2/Response";
+import StatusCode from "../protocols/smb2/StatusCode";
 import Session, { AuthenticateOptions } from "./Session";
-import * as structureUtil from "../protocol/structureUtil";
+import Smb2PacketType from "../protocols/smb2/PacketType";
+import * as structureUtil from "../protocols/structureUtil";
 
 export interface Options {
   port?: number;

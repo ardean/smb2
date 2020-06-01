@@ -1,10 +1,10 @@
 import Tree from "./Tree";
 import Client from "./Client";
 import { EventEmitter } from "events";
-import Dialect from "../protocol/smb2/Dialect";
-import Header from "../protocol/smb2/Header";
-import * as ntlmUtil from "../protocol/ntlm/util";
-import PacketType from "../protocol/smb2/PacketType";
+import Dialect from "../protocols/smb2/Dialect";
+import Header from "../protocols/smb2/Header";
+import * as ntlmUtil from "../protocols/ntlm/util";
+import PacketType from "../protocols/smb2/PacketType";
 
 export interface AuthenticateOptions {
   domain: string;
@@ -68,19 +68,20 @@ class Session extends EventEmitter {
     });
     const sessionSetupResponse = await this.request(
       { type: PacketType.SessionSetup },
-      { buffer: ntlmUtil.encodeNegotiationMessage(this.client.host, options.domain) }
+      { buffer: ntlmUtil.serializeNegotiationMessage(this.client.host, options.domain) }
     );
     this._id = sessionSetupResponse.header.sessionId;
 
-    const nonce = ntlmUtil.decodeChallengeMessage(sessionSetupResponse.body.buffer as Buffer);
+    const challengeMessage = ntlmUtil.parseChallengeMessage(sessionSetupResponse.body.buffer as Buffer);
+
     await this.request(
       { type: PacketType.SessionSetup },
       {
-        buffer: ntlmUtil.encodeAuthenticationMessage(
+        buffer: ntlmUtil.serializeAuthenticationMessage(
           options.username,
           this.client.host,
           options.domain,
-          nonce,
+          challengeMessage.serverChallenge,
           options.password
         )
       }

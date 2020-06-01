@@ -1,4 +1,4 @@
-// import runServer from "./runServer";
+import runServer from "./runServer";
 import runClient from "./runClient";
 
 (async () => {
@@ -10,6 +10,6 @@ import runClient from "./runClient";
     SHARE: share = "test"
   } = process.env;
 
-  // await runServer();
-  await runClient(host, domain, username, password, share);
+  await runServer();
+  // await runClient(host, domain, username, password, share);
 })();
