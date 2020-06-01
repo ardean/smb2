@@ -14,7 +14,7 @@ $ npm i @stifani/smb2
 
 ## Usage
 ```ts
-import smb2 from "../src";
+import smb2 from "@stifani/smb2";
 
 const client = new smb2.Client(host);
 const session = await client.authenticate({
