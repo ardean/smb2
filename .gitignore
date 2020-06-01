@@ -2,4 +2,5 @@
 /dist
 .DS_Store
 *.log
-*.json
+/shares.json
+/users.json
