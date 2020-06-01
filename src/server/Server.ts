@@ -11,7 +11,7 @@ import Smb2Response from "./Smb2Response";
 import SmbHeader from "../protocols/smb/Header";
 import Smb2Header from "../protocols/smb2/Header";
 import requestType from "./middlewares/requestType";
-import * as protocolIds from "../protocols/ProtocolIds";
+import * as ProtocolIds from "../protocols/ProtocolIds";
 import SmbPacketType from "../protocols/smb/PacketType";
 import Smb2PacketType from "../protocols/smb2/PacketType";
 import * as smbRequestHandlers from "./requestHandlers/smb";
@@ -33,12 +33,12 @@ export default class Server {
   private nextSessionId: bigint = 0n;
 
   async init() {
-    this.use(supportedProtocols([protocolIds.Smb, protocolIds.Smb2]));
+    this.use(supportedProtocols([ProtocolIds.Smb, ProtocolIds.Smb2]));
 
     const smb2RequestHandlerTypes = Object.keys(smb2RequestHandlers);
     for (const smb2RequestHandlerType of smb2RequestHandlerTypes) {
       const handler = requestType(
-        protocolIds.Smb2,
+        ProtocolIds.Smb2,
         Smb2PacketType[smb2RequestHandlerType],
         smb2RequestHandlers[smb2RequestHandlerType]
       );
@@ -48,7 +48,7 @@ export default class Server {
     const smbRequestHandlerTypes = Object.keys(smbRequestHandlers);
     for (const smbRequestHandlerType of smbRequestHandlerTypes) {
       const handler = requestType(
-        protocolIds.Smb,
+        ProtocolIds.Smb,
         SmbPacketType[smbRequestHandlerType],
         smbRequestHandlers[smbRequestHandlerType]
       );
@@ -106,7 +106,7 @@ export default class Server {
 
   async handleRequest(req: Request) {
     let res: Response;
-    if (req.header.protocolId === protocolIds.Smb) {
+    if (req.header.protocolId === ProtocolIds.Smb) {
       const header = req.header as SmbHeader;
       res = new SmbResponse({
         protocolId: header.protocolId,

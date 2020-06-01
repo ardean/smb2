@@ -1,4 +1,4 @@
-import * as protocolIds from "./ProtocolIds";
+import * as ProtocolIds from "./ProtocolIds";
 import StructureField from "./StructureField";
 import * as structureUtil from "./structureUtil";
 
@@ -6,7 +6,7 @@ export const protocolIdStructureField: StructureField = {
   type: String,
   encoding: "hex",
   size: 4,
-  defaultValue: protocolIds.Smb2
+  defaultValue: ProtocolIds.Smb2
 };
 
 export default class Packet {

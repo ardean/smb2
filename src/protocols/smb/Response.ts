@@ -12,6 +12,5 @@ export default class Response extends ProtocolResponse {
 
   serialize() {
     return Buffer.from([]);
-    // return Packet.serialize(this.header, this.body);
   }
 }

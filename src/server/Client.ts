@@ -8,7 +8,7 @@ import Packet from "../protocols/Packet";
 import Request from "../protocols/Request";
 import Response from "../protocols/Response";
 import Dialect from "../protocols/smb2/Dialect";
-import * as protocolIds from "../protocols/ProtocolIds";
+import * as ProtocolIds from "../protocols/ProtocolIds";
 
 interface Client {
   on(event: "request", callback: (req: Request) => void): this;
@@ -55,7 +55,7 @@ class Client extends EventEmitter {
 
     for (const chunk of chunks) {
       const protocolId = Packet.parseProtocolId(chunk);
-      if (protocolId === protocolIds.Smb) {
+      if (protocolId === ProtocolIds.Smb) {
         const request = SmbRequest.parse(chunk);
         this.emit("request", request);
       } else {

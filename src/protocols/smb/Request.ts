@@ -12,6 +12,5 @@ export default class Request extends ProtocolRequest {
 
   serialize() {
     return Buffer.from([]);
-    // return Packet.serialize(this.header, this.body);
   }
 }
