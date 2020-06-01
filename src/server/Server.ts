@@ -8,6 +8,7 @@ import Middleware from "./Middleware";
 import SmbResponse from "./SmbResponse";
 import * as util from "../protocols/util";
 import Smb2Response from "./Smb2Response";
+import ShareProvider from "./ShareProvider";
 import SmbHeader from "../protocols/smb/Header";
 import Smb2Header from "../protocols/smb2/Header";
 import requestType from "./middlewares/requestType";
@@ -19,7 +20,6 @@ import * as smb2RequestHandlers from "./requestHandlers/smb2";
 import unhandledRequest from "./middlewares/unhandledRequest";
 import AuthenticationProvider from "./AuthenticationProvider";
 import supportedProtocols from "./middlewares/supportedProtocols";
-import ShareProvider from "./ShareProvider";
 
 export default class Server {
   public port: number;

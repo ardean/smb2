@@ -68,7 +68,7 @@ class Session extends EventEmitter {
     });
     const sessionSetupResponse = await this.request(
       { type: PacketType.SessionSetup },
-      { buffer: ntlmv2.serializeNegotiationMessage(this.client.host, options.domain) }
+      { buffer: ntlmv2.serializeNegotiationMessage(options.domain, this.client.host) }
     );
     this._id = sessionSetupResponse.header.sessionId;
 

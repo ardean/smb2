@@ -119,7 +119,7 @@ export const parseList = <EntryType = any>(buffer: Buffer, parser: (entryBuffer:
   return list;
 };
 
-export const serializeStructure = (structure: Structure, data: any) => {
+export const serializeStructure = (structure: Structure, data: any, options: { addOffset?: number; } = {}) => {
   const normalizedData: { [fieldName: string]: { value?: Buffer; size?: number; structureFieldName?: string; structureField?: StructureField; } } = {};
   const structureFieldNames = Object.keys(structure);
   for (const structureFieldName of structureFieldNames) {
@@ -177,10 +177,18 @@ export const serializeStructure = (structure: Structure, data: any) => {
   for (const normalizedField of normalizedFields) {
     let currentOffset = offset;
     if (normalizedField.structureField && normalizedField.structureField.offsetFieldName) {
-      currentOffset = parseNumber(
+      const value = parseNumber(
         normalizedData[normalizedField.structureField.offsetFieldName].value,
         structure[normalizedField.structureField.offsetFieldName]
       ) as number;
+      // if (typeof options.addOffset === "number") {
+      //   normalizedData[normalizedField.structureField.offsetFieldName].value = serializeValue(
+      //     value + options.addOffset,
+      //     structure[normalizedField.structureField.offsetFieldName]
+      //   );
+      // }
+
+      currentOffset = value;
     }
     normalizedField.value.copy(buffer, currentOffset);
 

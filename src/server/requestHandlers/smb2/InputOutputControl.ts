@@ -9,6 +9,8 @@ export default (req: Request, res: Response) => {
   if (controlCode === ControlCode.ValidateNegotiateInfo) {
     if (req.body.fileId !== "ffffffffffffffffffffffffffffffff") throw new Error(`invalid_validate_negotiate_info_request`);
 
+    console.log(req.body.input);
+
     res.status(StatusCode.Success);
     res.send({
       controlCode,

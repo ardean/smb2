@@ -32,7 +32,7 @@ export default class Packet {
     const structure = Packet.getStructure(header);
 
     const headerBuffer = Packet.serializeHeader(header);
-    const bodyBuffer = structureUtil.serializeStructure(structure, body);
+    const bodyBuffer = structureUtil.serializeStructure(structure, body, { addOffset: headerSize });
 
     const buffer = Buffer.concat([headerBuffer, bodyBuffer]);
     const prefixedBuffer = Buffer.allocUnsafe(buffer.length + 4);
