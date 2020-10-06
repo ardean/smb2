@@ -3,7 +3,7 @@
   "description": "A SMB2 implementation in TypeScript",
   "repository": "https://github.com/ardean/smb2",
   "bugs": "https://github.com/ardean/smb2/issues",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "author": "ardean",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
