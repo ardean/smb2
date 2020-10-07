@@ -38,6 +38,7 @@ export default (req: Request, res: Response) => {
   res.set("treeId", treeId);
   res.send({
     shareType: TreeConnectShareType.Disk,
-    shareFlags: TreeConnectShareFlag.NoCaching
+    shareFlags: TreeConnectShareFlag.NoCaching,
+    maximalAccess: 0x001f01ff
   });
 };

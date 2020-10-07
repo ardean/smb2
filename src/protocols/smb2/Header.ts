@@ -95,7 +95,8 @@ export const headerStructure: HeaderStructure = {
     size: 8
   },
   signature: {
-    type: Number,
+    type: String,
+    encoding: "hex",
     size: 16
   }
 };

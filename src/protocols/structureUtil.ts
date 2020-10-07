@@ -120,7 +120,15 @@ export const parseList = <EntryType = any>(buffer: Buffer, parser: (entryBuffer:
 };
 
 export const serializeStructure = (structure: Structure, data: any, options: { addOffset?: number; } = {}) => {
-  const normalizedData: { [fieldName: string]: { value?: Buffer; size?: number; structureFieldName?: string; structureField?: StructureField; } } = {};
+  const normalizedData: {
+    [fieldName: string]: {
+      value?: Buffer;
+      size?: number;
+      offset?: number;
+      structureFieldName?: string;
+      structureField?: StructureField;
+    }
+  } = {};
   const structureFieldNames = Object.keys(structure);
   for (const structureFieldName of structureFieldNames) {
     const structureField = structure[structureFieldName];
@@ -175,24 +183,25 @@ export const serializeStructure = (structure: Structure, data: any, options: { a
 
   let offset = 0;
   for (const normalizedField of normalizedFields) {
-    let currentOffset = offset;
-    if (normalizedField.structureField && normalizedField.structureField.offsetFieldName) {
-      const value = parseNumber(
-        normalizedData[normalizedField.structureField.offsetFieldName].value,
-        structure[normalizedField.structureField.offsetFieldName]
-      ) as number;
-      // if (typeof options.addOffset === "number") {
-      //   normalizedData[normalizedField.structureField.offsetFieldName].value = serializeValue(
-      //     value + options.addOffset,
-      //     structure[normalizedField.structureField.offsetFieldName]
-      //   );
-      // }
+    if (
+      normalizedField.structureField &&
+      normalizedField.structureField.offsetFieldName
+    ) {
+      let currentOffset = offset;
+      if (typeof options.addOffset === "number") {
+        currentOffset += options.addOffset;
+      }
 
-      currentOffset = value;
+      const offsetField = normalizedData[normalizedField.structureField.offsetFieldName];
+      offsetField.value = serializeValue(currentOffset, offsetField.structureField);
     }
-    normalizedField.value.copy(buffer, currentOffset);
 
+    normalizedField.offset = offset;
     offset += normalizedField.size;
+  }
+
+  for (const normalizedField of normalizedFields) {
+    normalizedField.value.copy(buffer, normalizedField.offset);
   }
 
   return buffer;
