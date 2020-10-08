@@ -8,17 +8,15 @@ import Capability from "../../../protocols/smb2/Capability";
 import { headerSize } from "../../../protocols/smb2/Header";
 import SecurityMode from "../../../protocols/smb2/SecurityMode";
 
-const supportedDialects = [
-  Smb2Dialect.Smb2xx,
-  Smb2Dialect.Smb210,
-  Smb2Dialect.Smb202
-];
-
 export default (req: Request, res: Response) => {
   const dialects = req.body.dialects as Smb2Dialect[];
-  const targetDialect = supportedDialects.find(supportedDialect =>
-    dialects.find(dialect => dialect === supportedDialect)
+  const targetDialect = req.server.supportedSmb2Dialects.find(
+    supportedDialect => dialects.find(
+      dialect => dialect === supportedDialect
+    )
   );
+
+  req.client.setTargetDialect(targetDialect);
 
   const securityBuffer = Buffer.alloc(0);
 
@@ -31,9 +29,9 @@ export default (req: Request, res: Response) => {
     reserved: 0,
     serverGuid: req.server.guid,
     capabilities: Capability.DistributedFileSystem | Capability.Leasing | Capability.LargeMtu,
-    maxTransactSize: 0x00100000,
-    maxReadSize: 0x00100000,
-    maxWriteSize: 0x00100000,
+    maxTransactionSize: 0x00800000,
+    maxReadSize: 0x00800000,
+    maxWriteSize: 0x00800000,
     systemTime: dtyp.serializeFiletime(moment().toDate()),
     serverStartTime: dtyp.serializeFiletime(req.server.startDate),
     securityBufferOffset: headerSize + 64,

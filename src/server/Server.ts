@@ -12,6 +12,7 @@ import ShareProvider from "./ShareProvider";
 import SmbHeader from "../protocols/smb/Header";
 import Smb2Header from "../protocols/smb2/Header";
 import requestType from "./middlewares/requestType";
+import Smb2Dialect from "../protocols/smb2/Dialect";
 import * as ProtocolIds from "../protocols/ProtocolIds";
 import SmbPacketType from "../protocols/smb/PacketType";
 import Smb2PacketType from "../protocols/smb2/PacketType";
@@ -31,7 +32,15 @@ export default class Server {
   private authenticationProviders: AuthenticationProvider[] = [];
   private shareProviders: ShareProvider[] = [];
   private nextSessionId: bigint = 0n;
-
+  public supportedSmb2Dialects = [
+    Smb2Dialect.Smb3xx,
+    Smb2Dialect.Smb311,
+    Smb2Dialect.Smb302,
+    Smb2Dialect.Smb300,
+    Smb2Dialect.Smb2xx,
+    Smb2Dialect.Smb210,
+    Smb2Dialect.Smb202
+  ];
   async init() {
     this.use(supportedProtocols([ProtocolIds.Smb, ProtocolIds.Smb2]));
 
@@ -71,7 +80,7 @@ export default class Server {
   async listen(port: number = 445) {
     this.port = port;
 
-    await new Promise<void>((resolve) => {
+    await new Promise<void>(resolve => {
       this.server.listen({ port }, () => {
         resolve();
       });

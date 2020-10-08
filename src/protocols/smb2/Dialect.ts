@@ -1,3 +1,5 @@
+export const formatDialectName = (dialect: Dialect) => dialect.toString(16);
+
 enum Dialect {
   Smb202 = 0x0202,
   Smb210 = 0x0210,

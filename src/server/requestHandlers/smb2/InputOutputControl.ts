@@ -59,7 +59,7 @@ export default (req: Request, res: Response) => {
       }
     }, {
       ...input,
-      dialect: 528 // TODO: use Negotiate targetDialect!
+      dialect: req.client.targetDialect
     });
 
     res.status(StatusCode.Success);

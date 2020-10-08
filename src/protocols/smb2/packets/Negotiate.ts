@@ -74,7 +74,7 @@ const responseStructure: Structure = {
     type: Number,
     size: 4
   },
-  maxTransactSize: {
+  maxTransactionSize: {
     type: Number,
     size: 4
   },

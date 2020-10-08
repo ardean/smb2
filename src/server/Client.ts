@@ -7,8 +7,8 @@ import Smb2Request from "./Smb2Request";
 import Packet from "../protocols/Packet";
 import Request from "../protocols/Request";
 import Response from "../protocols/Response";
-import Dialect from "../protocols/smb2/Dialect";
 import * as ProtocolIds from "../protocols/ProtocolIds";
+import Dialect, { formatDialectName } from "../protocols/smb2/Dialect";
 
 interface Client {
   on(event: "request", callback: (req: Request) => void): this;
@@ -39,6 +39,11 @@ class Client extends EventEmitter {
     this.socket.addListener("data", this.onData);
     this.socket.addListener("error", this.onError);
     this.socket.addListener("close", this.onClose);
+  }
+
+  setTargetDialect(dialect: Dialect) {
+    this.targetDialect = dialect;
+    this.targetDialectName = formatDialectName(dialect);
   }
 
   private onData = (buffer: Buffer) => {
