@@ -53,8 +53,6 @@ const handleNegotiationRequest = (req: Request, res: Response) => {
   req.client.serverChallenge = serverChallenge;
   const challengeMessage = ntlmv2.serializeChallengeMessage(hostname, targetInfo, ntlmChallengeNegotiationFlags, serverChallenge);
 
-  req.client.session = req.server.createSession();
-
   res.status(StatusCode.MoreProcessingRequired);
 
   res.send({

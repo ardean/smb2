@@ -1,6 +1,5 @@
 import { Socket } from "net";
 import Server from "./Server";
-import Session from "./Session";
 import { EventEmitter } from "events";
 import SmbRequest from "./SmbRequest";
 import Smb2Request from "./Smb2Request";
@@ -24,7 +23,6 @@ class Client extends EventEmitter {
   public targetDialectName: string;
   public serverChallenge: Buffer;
   public useExtendedSessionSecurity: boolean = false;
-  public session: Session;
 
   constructor(
     private server: Server,

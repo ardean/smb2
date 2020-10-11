@@ -1,6 +1,5 @@
 import Client from "./Client";
 import Request from "./Request";
-import Session from "./Session";
 import net, { Socket } from "net";
 import Response from "./Response";
 import moment from "moment-timezone";
@@ -171,10 +170,5 @@ export default class Server {
       if (share) return share;
     }
     return null;
-  }
-
-  createSession() {
-    const session = new Session(this.nextSessionId++);
-    return session;
   }
 }
