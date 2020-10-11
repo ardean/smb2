@@ -104,7 +104,7 @@ class Session extends EventEmitter {
 
     await Promise.all(this.connectedTrees.map(x => x.disconnect()));
 
-    await this.request({ type: PacketType.LogOff });
+    await this.request({ type: PacketType.SessionLogoff });
     delete this._id;
 
     this.emit("logoff", this);

@@ -33,12 +33,6 @@ export default class Server {
   private shareProviders: ShareProvider[] = [];
   private nextSessionId: bigint = 0n;
   public supportedSmb2Dialects = [
-    Smb2Dialect.Smb3xx,
-    Smb2Dialect.Smb311,
-    Smb2Dialect.Smb302,
-    Smb2Dialect.Smb300,
-    Smb2Dialect.Smb2xx,
-    Smb2Dialect.Smb210,
     Smb2Dialect.Smb202
   ];
   async init() {
@@ -131,8 +125,7 @@ export default class Server {
         messageId: header.messageId,
         clientId: header.clientId,
         treeId: header.treeId,
-        sessionId: header.sessionId,
-        signature: header.signature
+        sessionId: header.sessionId
       });
     }
 

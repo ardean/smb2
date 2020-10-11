@@ -18,6 +18,14 @@ export default (req: Request, res: Response) => {
 
   req.client.setTargetDialect(targetDialect);
 
+  let capabilities = Capability.DistributedFileSystem;
+  if (
+    targetDialect !== Smb2Dialect.Smb202
+  ) {
+    capabilities |= Capability.Leasing;
+    capabilities |= Capability.LargeMtu;
+  }
+
   const securityBuffer = Buffer.alloc(0);
 
   res.status(StatusCode.Success);
@@ -28,7 +36,7 @@ export default (req: Request, res: Response) => {
     dialectRevision: targetDialect,
     reserved: 0,
     serverGuid: req.server.guid,
-    capabilities: Capability.DistributedFileSystem | Capability.Leasing | Capability.LargeMtu,
+    capabilities,
     maxTransactionSize: 0x00800000,
     maxReadSize: 0x00800000,
     maxWriteSize: 0x00800000,

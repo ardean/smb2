@@ -1,7 +1,9 @@
 import Request from "../../Smb2Request";
 import Response from "../../Smb2Response";
 import StatusCode from "../../../protocols/smb2/StatusCode";
+import Capability from "../../../protocols/smb2/Capability";
 import ControlCode from "../../../protocols/smb2/ControlCode";
+import SecurityMode from "../../../protocols/smb2/SecurityMode";
 import * as structureUtil from "../../../protocols/structureUtil";
 
 export default (req: Request, res: Response) => {
@@ -58,7 +60,9 @@ export default (req: Request, res: Response) => {
         size: 2
       }
     }, {
-      ...input,
+      capabilities: Capability.DistributedFileSystem,
+      fileId: req.server.guid,
+      securityMode: SecurityMode.SigningEnabled,
       dialect: req.client.targetDialect
     });
 

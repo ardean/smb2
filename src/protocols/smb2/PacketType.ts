@@ -1,7 +1,7 @@
 enum PacketType {
   Negotiate = 0x0000,
   SessionSetup = 0x0001,
-  LogOff = 0x0002,
+  SessionLogoff = 0x0002,
   TreeConnect = 0x0003,
   TreeDisconnect = 0x0004,
   Create = 0x0005,

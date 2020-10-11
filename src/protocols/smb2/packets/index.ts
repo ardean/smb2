@@ -1,6 +1,6 @@
 export { default as Negotiate } from "./Negotiate";
 export { default as SessionSetup } from "./SessionSetup";
-export { default as LogOff } from "./LogOff";
+export { default as SessionLogoff } from "./SessionLogoff";
 export { default as TreeConnect } from "./TreeConnect";
 export { default as TreeDisconnect } from "./TreeDisconnect";
 export { default as Create } from "./Create";
