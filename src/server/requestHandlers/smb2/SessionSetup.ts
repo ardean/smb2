@@ -163,8 +163,10 @@ const syncNegotiationFlags = (negotiationFlags: number) => {
     challengeNegotiateFlags |= NegotiateFlag.Seal;
   }
 
-  if ((negotiationFlags & NegotiateFlag.Sign) > 0 ||
-    (negotiationFlags & NegotiateFlag.Seal) > 0) {
+  if (
+    (negotiationFlags & NegotiateFlag.Sign) > 0 ||
+    (negotiationFlags & NegotiateFlag.Seal) > 0
+  ) {
     if ((negotiationFlags & NegotiateFlag.Use56BitEncryption) > 0) {
       // [MS-NLMP] If the client sends NTLMSSP_NEGOTIATE_SEAL or NTLMSSP_NEGOTIATE_SIGN with
       // NTLMSSP_NEGOTIATE_56 to the server in the NEGOTIATE_MESSAGE, the server MUST return
