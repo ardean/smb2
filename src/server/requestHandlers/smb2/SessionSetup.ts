@@ -80,7 +80,7 @@ const handleAuthenticationRequest = (req: Request, res: Response) => {
     });
     return;
   } else {
-    const user = req.server.getUser(authenticationMessage.domain, authenticationMessage.username);
+    const user = req.server.findUser(authenticationMessage.domain, authenticationMessage.username);
     if (!user) {
       res.status(StatusCode.LogonFailure);
       sendEmptyBody(res);

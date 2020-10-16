@@ -156,7 +156,7 @@ export default class Server {
     }
   }
 
-  getUser(domain: string, username: string) {
+  findUser(domain: string, username: string) {
     for (const authenticationProvider of this.authenticationProviders) {
       const user = authenticationProvider.getUser(domain, username);
       if (user) return user;
@@ -164,7 +164,7 @@ export default class Server {
     return null;
   }
 
-  getShare(name: string) {
+  findShare(name: string) {
     for (const shareProvider of this.shareProviders) {
       const share = shareProvider.getShare(name);
       if (share) return share;
