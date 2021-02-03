@@ -76,6 +76,15 @@ class Tree extends EventEmitter {
     await directory.close();
   }
 
+  async renameDirectory(path: string, newPath: string) {
+    const directory = new Directory(this);
+    this.registerDirectory(directory);
+
+    await directory.open(path, { desiredAccess: DirectoryAccess.MaximumAllowed });
+    await directory.rename(newPath);
+    await directory.close();
+  }
+
   async watch(onChange?: (response: Response) => void, recursive?: boolean) {
     return await this.watchDirectory("", onChange, recursive);
   }
@@ -128,6 +137,14 @@ class Tree extends EventEmitter {
     this.registerFile(file);
     await file.open(path, { desiredAccess: FilePipePrinterAccess.Delete });
     await file.remove();
+    await file.close();
+  }
+  
+  async renameFile(path: string, newPath: string) {
+    const file = new File(this);
+    this.registerFile(file);
+    await file.open(path, { desiredAccess: FilePipePrinterAccess.MaximumAllowed });
+    await file.rename(newPath);
     await file.close();
   }
 
