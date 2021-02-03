@@ -1,10 +1,14 @@
 {
-  "name": "@stifani/smb2",
+  "name": "@bulentv/smb2",
   "description": "A SMB2 implementation in TypeScript",
-  "repository": "https://github.com/ardean/smb2",
-  "bugs": "https://github.com/ardean/smb2/issues",
-  "version": "0.2.2",
+  "repository": "https://github.com/bulentv/smb2-ts",
+  "bugs": "https://github.com/bulentv/smb2-ts/issues",
+  "version": "0.3.1",
   "author": "ardean",
+  "contributors": [
+    "Bulent Vural <bulentv@gmail.com>",
+    "Mehmet Baker <mehmet.baker@gmail.com>"
+  ],
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "license": "MIT",
