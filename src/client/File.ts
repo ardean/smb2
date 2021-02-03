@@ -81,6 +81,18 @@ class File extends EventEmitter {
     await this.setInfo(FileInfoClass.DispositionInformation, buffer);
   }
 
+  async rename(newPath) {
+    const newPathUCS2 = Buffer.from(newPath, 'ucs2');
+    const buffer = Buffer.alloc(1 + 7 + 8 + 4 + newPathUCS2.length);
+
+    buffer.fill(0x00);
+    buffer.writeUInt8(1, 0);
+    buffer.writeUInt32LE(newPathUCS2.length, 16);
+    buffer.fill(newPathUCS2, 20);
+
+    await this.setInfo(FileInfoClass.RenameInformation, buffer);
+  }
+
   async setSize(size: bigint) {
     const buffer = Buffer.alloc(8);
     buffer.writeBigInt64LE(size);
