@@ -3,7 +3,7 @@
   "description": "A SMB2 implementation in TypeScript",
   "repository": "https://github.com/bulentv/smb2-ts",
   "bugs": "https://github.com/bulentv/smb2-ts/issues",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "author": "ardean",
   "contributors": [
     "Bulent Vural <bulentv@gmail.com>",
