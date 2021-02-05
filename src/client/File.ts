@@ -81,8 +81,8 @@ class File extends EventEmitter {
     await this.setInfo(FileInfoClass.DispositionInformation, buffer);
   }
 
-  async rename(newPath) {
-    const newPathUCS2 = Buffer.from(newPath, 'ucs2');
+  async rename(newPath: string) {
+    const newPathUCS2 = Buffer.from(newPath, "ucs2");
     const buffer = Buffer.alloc(1 + 7 + 8 + 4 + newPathUCS2.length);
 
     buffer.fill(0x00);
