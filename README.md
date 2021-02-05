@@ -32,8 +32,8 @@ console.log(entries);
 
 ### Client
 - watch shares for file and directory changes
-- create, read & remove files
-- create, list & remove directories
+- create, read & remove & rename files
+- create, list & remove & rename directories
 - check directory/file exists
 
 ## WIP
