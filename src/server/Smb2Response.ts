@@ -1,10 +1,10 @@
 import Request from "./Request";
-import Value from "../protocol/Value";
-import ProtocolSmb2Response from "../protocol/smb2/Response";
+import Value from "../protocols/Value";
+import ProtocolSmb2Response from "../protocols/smb2/Response";
 
 export default class Smb2Response extends ProtocolSmb2Response {
   sent: boolean = false;
-  redirectedReq: Request;
+  redirectedRequest: Request;
 
   public status(status: number) {
     this.header.status = status;
@@ -16,12 +16,15 @@ export default class Smb2Response extends ProtocolSmb2Response {
     this.header[name] = value;
   }
 
-  public send(data: any) {
-    this.body = data;
+  public send(data: any = {}) {
+    this.body = {
+      ...(this.body || {}),
+      ...data
+    };
     this.sent = true;
   }
 
   public redirect(req: Request) {
-    this.redirectedReq = req;
+    this.redirectedRequest = req;
   }
 }

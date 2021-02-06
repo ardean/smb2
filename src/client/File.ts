@@ -1,14 +1,14 @@
 import Tree from "./Tree";
 import { EventEmitter } from "events";
-import * as util from "../protocol/util";
-import StatusCode from "../protocol/smb2/StatusCode";
-import PacketType from "../protocol/smb2/PacketType";
-import FileAttribute from "../protocol/smb2/FileAttribute";
-import ShareAccessType from "../protocol/smb2/ShareAccessType";
-import { CreateOptions } from "../protocol/smb2/packets/Create";
-import CreateDispositionType from "../protocol/smb2/CreateDispositionType";
-import FilePipePrinterAccess from "../protocol/smb2/FilePipePrinterAccess";
-import { FileInfoClass, InfoType } from "../protocol/smb2/packets/SetInfo";
+import * as util from "../protocols/util";
+import StatusCode from "../protocols/smb2/StatusCode";
+import PacketType from "../protocols/smb2/PacketType";
+import FileAttribute from "../protocols/smb2/FileAttribute";
+import ShareAccessType from "../protocols/smb2/ShareAccessType";
+import { CreateOptions } from "../protocols/smb2/packets/Create";
+import CreateDispositionType from "../protocols/smb2/CreateDispositionType";
+import FilePipePrinterAccess from "../protocols/smb2/FilePipePrinterAccess";
+import { FileInfoClass, InfoType } from "../protocols/smb2/packets/SetInfo";
 
 const maxReadChunkLength = 0x00010000;
 const maxWriteChunkLength = 0x00010000 - 0x71;

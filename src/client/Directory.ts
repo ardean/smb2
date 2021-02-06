@@ -1,18 +1,18 @@
 import Tree from "./Tree";
 import { EventEmitter } from "events";
-import * as util from "../protocol/util";
-import Response from "../protocol/smb2/Response";
-import StatusCode from "../protocol/smb2/StatusCode";
-import PacketType from "../protocol/smb2/PacketType";
-import FileAttribute from "../protocol/smb2/FileAttribute";
-import ShareAccessType from "../protocol/smb2/ShareAccessType";
-import DirectoryAccess from "../protocol/smb2/DirectoryAccess";
-import { CreateOptions } from "../protocol/smb2/packets/Create";
-import * as structureUtil from "../protocol/structureUtil";
-import DirectoryEntry from "../protocol/models/DirectoryEntry";
-import { InfoType, FileInfoClass } from "../protocol/smb2/packets/SetInfo";
-import CreateDispositionType from "../protocol/smb2/CreateDispositionType";
-import { Flags as ChangeNotifyFlags } from "../protocol/smb2/packets/ChangeNotify";
+import * as util from "../protocols/util";
+import Response from "../protocols/smb2/Response";
+import StatusCode from "../protocols/smb2/StatusCode";
+import PacketType from "../protocols/smb2/PacketType";
+import FileAttribute from "../protocols/smb2/FileAttribute";
+import ShareAccessType from "../protocols/smb2/ShareAccessType";
+import DirectoryAccess from "../protocols/smb2/DirectoryAccess";
+import { CreateOptions } from "../protocols/smb2/packets/Create";
+import * as structureUtil from "../protocols/structureUtil";
+import DirectoryEntry from "../models/DirectoryEntry";
+import { InfoType, FileInfoClass } from "../protocols/smb2/packets/SetInfo";
+import CreateDispositionType from "../protocols/smb2/CreateDispositionType";
+import { Flags as ChangeNotifyFlags } from "../protocols/smb2/packets/ChangeNotify";
 
 interface OpenOptions {
   desiredAccess?: DirectoryAccess;

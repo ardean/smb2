@@ -1,10 +1,10 @@
 import Request from "./Request";
-import Value from "../protocol/Value";
-import ProtocolSmbResponse from "../protocol/smb/Response";
+import Value from "../protocols/Value";
+import ProtocolSmbResponse from "../protocols/smb/Response";
 
 export default class SmbResponse extends ProtocolSmbResponse {
   sent: boolean = false;
-  redirectedReq: Request;
+  redirectedRequest: Request;
 
   public status(status: number) {
     this.header.status = status;
@@ -22,6 +22,6 @@ export default class SmbResponse extends ProtocolSmbResponse {
   }
 
   public redirect(req: Request) {
-    this.redirectedReq = req;
+    this.redirectedRequest = req;
   }
 }

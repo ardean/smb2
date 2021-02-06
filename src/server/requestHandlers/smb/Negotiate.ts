@@ -1,9 +1,9 @@
 import Request from "../../SmbRequest";
 import Response from "../../SmbResponse";
 import Smb2Request from "../../Smb2Request";
-import Dialect from "../../../protocol/smb2/Dialect";
-import * as protocolIds from "../../../protocol/protocolIds";
-import Smb2PacketType from "../../../protocol/smb2/PacketType";
+import Dialect from "../../../protocols/smb2/Dialect";
+import * as ProtocolIds from "../../../protocols/ProtocolIds";
+import Smb2PacketType from "../../../protocols/smb2/PacketType";
 
 const supportedDialects = [
   "NT LM 0.12",
@@ -20,7 +20,7 @@ export default (req: Request, res: Response) => {
 
   if (matchingDialects.find(x => x.startsWith("SMB 2."))) {
     const newReq = new Smb2Request({
-      protocolId: protocolIds.smb2,
+      protocolId: ProtocolIds.Smb2,
       type: Smb2PacketType.Negotiate
     }, {
       dialects: [

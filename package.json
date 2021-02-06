@@ -29,7 +29,9 @@
     "node": ">=10.0.0"
   },
   "dependencies": {
-    "moment-timezone": "^0.5.31"
+    "dtyp": "^0.1.2",
+    "moment-timezone": "^0.5.31",
+    "ntlmv2": "^0.1.4"
   },
   "devDependencies": {
     "@types/node": "^13.7.4",

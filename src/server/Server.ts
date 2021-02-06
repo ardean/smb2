@@ -5,16 +5,20 @@ import Response from "./Response";
 import moment from "moment-timezone";
 import Middleware from "./Middleware";
 import SmbResponse from "./SmbResponse";
-import * as util from "../protocol/util";
+import * as util from "../protocols/util";
 import Smb2Response from "./Smb2Response";
-import SmbHeader from "../protocol/smb/Header";
-import Smb2Header from "../protocol/smb2/Header";
+import ShareProvider from "./ShareProvider";
+import SmbHeader from "../protocols/smb/Header";
+import Smb2Header from "../protocols/smb2/Header";
 import requestType from "./middlewares/requestType";
-import * as protocolIds from "../protocol/protocolIds";
-import SmbPacketType from "../protocol/smb/PacketType";
-import Smb2PacketType from "../protocol/smb2/PacketType";
+import Smb2Dialect from "../protocols/smb2/Dialect";
+import * as ProtocolIds from "../protocols/ProtocolIds";
+import SmbPacketType from "../protocols/smb/PacketType";
+import Smb2PacketType from "../protocols/smb2/PacketType";
 import * as smbRequestHandlers from "./requestHandlers/smb";
 import * as smb2RequestHandlers from "./requestHandlers/smb2";
+import unhandledRequest from "./middlewares/unhandledRequest";
+import AuthenticationProvider from "./AuthenticationProvider";
 import supportedProtocols from "./middlewares/supportedProtocols";
 
 export default class Server {
@@ -24,14 +28,19 @@ export default class Server {
   public startDate: Date;
   public guid = util.generateGuid();
   private middlewares: Middleware[] = [];
-
-  constructor() {
-    this.use(supportedProtocols([protocolIds.smb, protocolIds.smb2]));
+  private authenticationProviders: AuthenticationProvider[] = [];
+  private shareProviders: ShareProvider[] = [];
+  private nextSessionId: bigint = 0n;
+  public supportedSmb2Dialects = [
+    Smb2Dialect.Smb202
+  ];
+  async init() {
+    this.use(supportedProtocols([ProtocolIds.Smb, ProtocolIds.Smb2]));
 
     const smb2RequestHandlerTypes = Object.keys(smb2RequestHandlers);
     for (const smb2RequestHandlerType of smb2RequestHandlerTypes) {
       const handler = requestType(
-        protocolIds.smb2,
+        ProtocolIds.Smb2,
         Smb2PacketType[smb2RequestHandlerType],
         smb2RequestHandlers[smb2RequestHandlerType]
       );
@@ -41,11 +50,21 @@ export default class Server {
     const smbRequestHandlerTypes = Object.keys(smbRequestHandlers);
     for (const smbRequestHandlerType of smbRequestHandlerTypes) {
       const handler = requestType(
-        protocolIds.smb,
+        ProtocolIds.Smb,
         SmbPacketType[smbRequestHandlerType],
         smbRequestHandlers[smbRequestHandlerType]
       );
       this.use(handler);
+    }
+
+    this.use(unhandledRequest);
+
+    for (const authenticationProvider of this.authenticationProviders) {
+      await authenticationProvider.init();
+    }
+
+    for (const shareProvider of this.shareProviders) {
+      await shareProvider.init();
     }
 
     this.server.addListener("connection", this.onConnection);
@@ -54,7 +73,7 @@ export default class Server {
   async listen(port: number = 445) {
     this.port = port;
 
-    await new Promise<void>((resolve) => {
+    await new Promise<void>(resolve => {
       this.server.listen({ port }, () => {
         resolve();
       });
@@ -68,7 +87,11 @@ export default class Server {
   private onConnection = (socket: Socket) => {
     const client = new Client(this, socket);
     client.on("request", this.onRequest(client));
-    client.setup();
+    client.once("destroy", () => {
+      const index = this.clients.indexOf(client);
+      if (index !== -1) this.clients.splice(index, 1);
+    });
+    client.init();
     this.clients.push(client);
   }
 
@@ -85,7 +108,7 @@ export default class Server {
 
   async handleRequest(req: Request) {
     let res: Response;
-    if (req.header.protocolId === protocolIds.smb) {
+    if (req.header.protocolId === ProtocolIds.Smb) {
       const header = req.header as SmbHeader;
       res = new SmbResponse({
         protocolId: header.protocolId,
@@ -101,17 +124,20 @@ export default class Server {
         messageId: header.messageId,
         clientId: header.clientId,
         treeId: header.treeId,
-        sessionId: header.sessionId,
-        signature: header.signature
+        sessionId: header.sessionId
       });
     }
 
     req.response = res;
 
-    for (const middleware of this.middlewares) {
-      await middleware(req, res);
-      if (res.sent) return req.client.send(res);
-      if (res.redirectedReq) return await this.redirect(req, res.redirectedReq);
+    try {
+      for (const middleware of this.middlewares) {
+        await middleware(req, res);
+        if (res.sent) return req.client.send(res);
+        if (res.redirectedRequest) return await this.redirect(req, res.redirectedRequest);
+      }
+    } catch (err) {
+      console.error(err);
     }
   }
 
@@ -120,7 +146,29 @@ export default class Server {
     await this.handleRequest(to);
   }
 
-  use(middleware: Middleware) {
-    this.middlewares.push(middleware);
+  use(element: Middleware | AuthenticationProvider | ShareProvider) {
+    if (element instanceof AuthenticationProvider) {
+      this.authenticationProviders.push(element);
+    } else if (element instanceof ShareProvider) {
+      this.shareProviders.push(element);
+    } else {
+      this.middlewares.push(element);
+    }
+  }
+
+  findUser(domain: string, username: string) {
+    for (const authenticationProvider of this.authenticationProviders) {
+      const user = authenticationProvider.getUser(domain, username);
+      if (user) return user;
+    }
+    return null;
+  }
+
+  findShare(name: string) {
+    for (const shareProvider of this.shareProviders) {
+      const share = shareProvider.getShare(name);
+      if (share) return share;
+    }
+    return null;
   }
 }
