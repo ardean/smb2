@@ -181,6 +181,7 @@ export const serializeValue = (value: Value, structureField: StructureField): Bu
   }
   if (Buffer.isBuffer(value)) return value;
   if (typeof value === "string") return serializeString(value, structureField);
+  if (Array.isArray(value)) return Buffer.from(value);
 
   const bignumberValue = BigInt(value);
   const result = Buffer.allocUnsafe(structureField.size);

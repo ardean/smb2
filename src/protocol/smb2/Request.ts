@@ -3,8 +3,7 @@ import Packet from "./Packet";
 import ProtocolRequest from "../Request";
 
 export default class Request extends ProtocolRequest {
-  header: Header;
-
+  declare header: Header;
   typeName: string;
   data: any;
 

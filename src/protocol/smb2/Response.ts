@@ -4,8 +4,7 @@ import HeaderFlag from "./HeaderFlag";
 import ProtocolResponse from "../Response";
 
 export default class Response extends ProtocolResponse {
-  header: Header;
-
+  declare header: Header;
   typeName: string;
   data: any;
 
