@@ -30,6 +30,7 @@
     "node": ">=18"
   },
   "dependencies": {
+    "des.js": "^1.1.0",
     "httpntlm": "^1.8.13",
     "moment-timezone": "^0.5.31"
   },
