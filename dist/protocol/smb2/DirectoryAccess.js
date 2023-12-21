@@ -1,0 +1,26 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var DirectoryAccess;
+(function (DirectoryAccess) {
+    DirectoryAccess[DirectoryAccess["ListDirectory"] = 1] = "ListDirectory";
+    DirectoryAccess[DirectoryAccess["AddFile"] = 2] = "AddFile";
+    DirectoryAccess[DirectoryAccess["AddSubDirectory"] = 4] = "AddSubDirectory";
+    DirectoryAccess[DirectoryAccess["ReadEa"] = 8] = "ReadEa";
+    DirectoryAccess[DirectoryAccess["WriteEa"] = 16] = "WriteEa";
+    DirectoryAccess[DirectoryAccess["Traverse"] = 32] = "Traverse";
+    DirectoryAccess[DirectoryAccess["DeleteChild"] = 64] = "DeleteChild";
+    DirectoryAccess[DirectoryAccess["ReadAttributes"] = 128] = "ReadAttributes";
+    DirectoryAccess[DirectoryAccess["WriteAttributes"] = 256] = "WriteAttributes";
+    DirectoryAccess[DirectoryAccess["Delete"] = 65536] = "Delete";
+    DirectoryAccess[DirectoryAccess["ReadControl"] = 131072] = "ReadControl";
+    DirectoryAccess[DirectoryAccess["WriteDiscretionaryAccessControl"] = 262144] = "WriteDiscretionaryAccessControl";
+    DirectoryAccess[DirectoryAccess["WriteOwner"] = 524288] = "WriteOwner";
+    DirectoryAccess[DirectoryAccess["Synchronize"] = 1048576] = "Synchronize";
+    DirectoryAccess[DirectoryAccess["AccessSystemSecurity"] = 16777216] = "AccessSystemSecurity";
+    DirectoryAccess[DirectoryAccess["MaximumAllowed"] = 33554432] = "MaximumAllowed";
+    DirectoryAccess[DirectoryAccess["GenericAll"] = 268435456] = "GenericAll";
+    DirectoryAccess[DirectoryAccess["GenericExecute"] = 536870912] = "GenericExecute";
+    DirectoryAccess[DirectoryAccess["GenericWrite"] = 1073741824] = "GenericWrite";
+    DirectoryAccess[DirectoryAccess["GenericRead"] = -2147483648] = "GenericRead";
+})(DirectoryAccess || (DirectoryAccess = {}));
+exports.default = DirectoryAccess;

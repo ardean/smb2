@@ -1,0 +1,28 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var NegotiateFlag;
+(function (NegotiateFlag) {
+    NegotiateFlag[NegotiateFlag["UnicodeEncoding"] = 1] = "UnicodeEncoding";
+    NegotiateFlag[NegotiateFlag["OemEncoding"] = 2] = "OemEncoding";
+    NegotiateFlag[NegotiateFlag["TargetNameSupplied"] = 4] = "TargetNameSupplied";
+    NegotiateFlag[NegotiateFlag["Sign"] = 16] = "Sign";
+    NegotiateFlag[NegotiateFlag["Seal"] = 32] = "Seal";
+    NegotiateFlag[NegotiateFlag["Diagram"] = 64] = "Diagram";
+    NegotiateFlag[NegotiateFlag["LanManagerSessionKey"] = 128] = "LanManagerSessionKey";
+    NegotiateFlag[NegotiateFlag["NTLMSessionSecurity"] = 512] = "NTLMSessionSecurity";
+    NegotiateFlag[NegotiateFlag["Anonymous"] = 2048] = "Anonymous";
+    NegotiateFlag[NegotiateFlag["DomainNameSupplied"] = 4096] = "DomainNameSupplied";
+    NegotiateFlag[NegotiateFlag["WorkstationNameSupplied"] = 8192] = "WorkstationNameSupplied";
+    NegotiateFlag[NegotiateFlag["AlwaysSign"] = 32768] = "AlwaysSign";
+    NegotiateFlag[NegotiateFlag["TargetTypeDomain"] = 65536] = "TargetTypeDomain";
+    NegotiateFlag[NegotiateFlag["TargetTypeServer"] = 131072] = "TargetTypeServer";
+    NegotiateFlag[NegotiateFlag["ExtendedSessionSecurity"] = 524288] = "ExtendedSessionSecurity";
+    NegotiateFlag[NegotiateFlag["Identify"] = 1048576] = "Identify";
+    NegotiateFlag[NegotiateFlag["RequestNonNtSessionKey"] = 4194304] = "RequestNonNtSessionKey";
+    NegotiateFlag[NegotiateFlag["TargetInfo"] = 8388608] = "TargetInfo";
+    NegotiateFlag[NegotiateFlag["Version"] = 33554432] = "Version";
+    NegotiateFlag[NegotiateFlag["Use128BitEncryption"] = 536870912] = "Use128BitEncryption";
+    NegotiateFlag[NegotiateFlag["KeyExchange"] = 1073741824] = "KeyExchange";
+    NegotiateFlag[NegotiateFlag["Use56BitEncryption"] = -2147483648] = "Use56BitEncryption";
+})(NegotiateFlag || (NegotiateFlag = {}));
+exports.default = NegotiateFlag;

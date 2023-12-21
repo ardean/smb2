@@ -1,0 +1,22 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var FileAttribute;
+(function (FileAttribute) {
+    FileAttribute[FileAttribute["None"] = 0] = "None";
+    FileAttribute[FileAttribute["ReadOnly"] = 1] = "ReadOnly";
+    FileAttribute[FileAttribute["Hidden"] = 2] = "Hidden";
+    FileAttribute[FileAttribute["System"] = 4] = "System";
+    FileAttribute[FileAttribute["Directory"] = 16] = "Directory";
+    FileAttribute[FileAttribute["Archive"] = 32] = "Archive";
+    FileAttribute[FileAttribute["Normal"] = 128] = "Normal";
+    FileAttribute[FileAttribute["Temporary"] = 256] = "Temporary";
+    FileAttribute[FileAttribute["SparseFile"] = 512] = "SparseFile";
+    FileAttribute[FileAttribute["ReparsePoint"] = 1024] = "ReparsePoint";
+    FileAttribute[FileAttribute["Compressed"] = 2048] = "Compressed";
+    FileAttribute[FileAttribute["Offline"] = 4096] = "Offline";
+    FileAttribute[FileAttribute["NotContentIndexed"] = 8192] = "NotContentIndexed";
+    FileAttribute[FileAttribute["Encrypted"] = 16384] = "Encrypted";
+    FileAttribute[FileAttribute["IntegrityStream"] = 32768] = "IntegrityStream";
+    FileAttribute[FileAttribute["NoScrubData"] = 131072] = "NoScrubData";
+})(FileAttribute || (FileAttribute = {}));
+exports.default = FileAttribute;
