@@ -15,7 +15,8 @@
     "lint": "tslint --project ."
   },
   "files": [
-    "dist"
+    "dist",
+    "src"
   ],
   "keywords": [
     "smb2",
@@ -27,7 +28,7 @@
     "file-sharing"
   ],
   "engines": {
-    "node": ">=10.0.0"
+    "node": ">18"
   },
   "dependencies": {
     "moment-timezone": "^0.5.31"
