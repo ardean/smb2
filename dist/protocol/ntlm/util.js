@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateServerChallenge = exports.encodeAuthenticationMessage = exports.decodeChallengeMessage = exports.encodeChallengeMessage = exports.decodeNegotiationMessage = exports.encodeNegotiationMessage = void 0;
 const crypto_1 = __importDefault(require("crypto"));
 const httpntlm_1 = __importDefault(require("httpntlm"));
+const des_js_1 = __importDefault(require("des.js"));
 const NegotiateFlag_1 = __importDefault(require("./NegotiateFlag"));
 exports.encodeNegotiationMessage = (hostname, domain) => {
     hostname = hostname.toUpperCase();
@@ -222,4 +223,117 @@ exports.generateServerChallenge = () => {
 };
 const createLmHash = (text) => httpntlm_1.default.ntlm.create_LM_hashed_password(text);
 const createNtHash = (str) => httpntlm_1.default.ntlm.create_NT_hashed_password(str);
-const createResponse = (hash, nonce) => httpntlm_1.default.ntlm.calc_resp(hash, nonce);
+// const createResponse = (hash: Buffer, nonce: Buffer): Buffer =>
+//   httpntlm.ntlm.calc_resp(hash, nonce);
+// const createResponse = (hash: Buffer, nonce: Buffer) => {
+//   const buffer = Buffer.alloc(24);
+//   for (let index = 0; index < 3; index++) {
+//     const keyBuffer = fixOddParity(
+//       createDESKey(hash.slice(index * 7, index * 7 + 7))
+//     );
+//     const cipher = crypto.createCipheriv('DES-ECB', keyBuffer, '');
+//     const string = cipher.update(nonce.toString('binary'), 'binary', 'binary');
+//     buffer.write(string, index * 8, index * 8 + 8, 'binary');
+//   }
+//   return buffer;
+// };
+const bytes2binaryArray = (buf) => {
+    const hex2binary = {
+        0: [0, 0, 0, 0],
+        1: [0, 0, 0, 1],
+        2: [0, 0, 1, 0],
+        3: [0, 0, 1, 1],
+        4: [0, 1, 0, 0],
+        5: [0, 1, 0, 1],
+        6: [0, 1, 1, 0],
+        7: [0, 1, 1, 1],
+        8: [1, 0, 0, 0],
+        9: [1, 0, 0, 1],
+        A: [1, 0, 1, 0],
+        B: [1, 0, 1, 1],
+        C: [1, 1, 0, 0],
+        D: [1, 1, 0, 1],
+        E: [1, 1, 1, 0],
+        F: [1, 1, 1, 1]
+    };
+    const hexString = buf.toString('hex').toUpperCase();
+    let array = [];
+    for (let i = 0; i < hexString.length; i++) {
+        const hexchar = hexString.charAt(i);
+        array = array.concat(hex2binary[hexchar]);
+    }
+    return array;
+};
+const binaryArray2bytes = (array) => {
+    const binary2hex = {
+        '0000': 0,
+        '0001': 1,
+        '0010': 2,
+        '0011': 3,
+        '0100': 4,
+        '0101': 5,
+        '0110': 6,
+        '0111': 7,
+        '1000': 8,
+        '1001': 9,
+        '1010': 'A',
+        '1011': 'B',
+        '1100': 'C',
+        '1101': 'D',
+        '1110': 'E',
+        '1111': 'F'
+    };
+    const bufArray = [];
+    for (let i = 0; i < array.length; i += 8) {
+        if (i + 7 > array.length)
+            break;
+        const binString1 = '' + array[i] + '' + array[i + 1] + '' + array[i + 2] + '' + array[i + 3];
+        const binString2 = '' +
+            array[i + 4] +
+            '' +
+            array[i + 5] +
+            '' +
+            array[i + 6] +
+            '' +
+            array[i + 7];
+        const hexchar1 = binary2hex[binString1];
+        const hexchar2 = binary2hex[binString2];
+        const buf = Buffer.from(hexchar1 + '' + hexchar2, 'hex');
+        bufArray.push(buf);
+    }
+    return Buffer.concat(bufArray);
+};
+const insertZerosEvery7Bits = (buf) => {
+    const binaryArray = bytes2binaryArray(buf);
+    const newBinaryArray = [];
+    for (let i = 0; i < binaryArray.length; i++) {
+        newBinaryArray.push(binaryArray[i]);
+        if ((i + 1) % 7 === 0) {
+            newBinaryArray.push(0);
+        }
+    }
+    return binaryArray2bytes(newBinaryArray);
+};
+const createResponse = (hash, nonce) => {
+    // padding with zeros to make the hash 21 bytes long
+    const passHashPadded = Buffer.alloc(21);
+    passHashPadded.fill('\0');
+    hash.copy(passHashPadded, 0, 0, hash.length);
+    const resArray = [];
+    const des1 = des_js_1.default.DES.create({
+        type: 'encrypt',
+        key: insertZerosEvery7Bits(passHashPadded.slice(0, 7))
+    });
+    resArray.push(Buffer.from(des1.update(nonce.slice(0, 8))));
+    const des2 = des_js_1.default.DES.create({
+        type: 'encrypt',
+        key: insertZerosEvery7Bits(passHashPadded.slice(7, 14))
+    });
+    resArray.push(Buffer.from(des2.update(nonce.slice(0, 8))));
+    const des3 = des_js_1.default.DES.create({
+        type: 'encrypt',
+        key: insertZerosEvery7Bits(passHashPadded.slice(14, 21))
+    });
+    resArray.push(Buffer.from(des3.update(nonce.slice(0, 8))));
+    return Buffer.concat(resArray);
+};
