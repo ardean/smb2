@@ -1,19 +1,19 @@
-import crypto from 'crypto';
-import desjs from 'des.js';
-import jsmd4 from 'js-md4';
-import NegotiateFlag from './NegotiateFlag';
+import crypto from "crypto";
+import desjs from "des.js";
+import jsmd4 from "js-md4";
+import NegotiateFlag from "./NegotiateFlag";
 
 export const encodeNegotiationMessage = (hostname: string, domain: string) => {
   hostname = hostname.toUpperCase();
   domain = domain.toUpperCase();
 
-  const hostnameLength = Buffer.byteLength(hostname, 'ascii');
-  const domainLength = Buffer.byteLength(domain, 'ascii');
+  const hostnameLength = Buffer.byteLength(hostname, "ascii");
+  const domainLength = Buffer.byteLength(domain, "ascii");
 
   let offset = 0;
   const buffer = Buffer.alloc(32 + hostnameLength + domainLength);
 
-  buffer.write('NTLMSSP', offset, 7, 'ascii');
+  buffer.write("NTLMSSP", offset, 7, "ascii");
   offset += 7;
   buffer.writeUInt8(0, offset);
   offset += 1;
@@ -45,8 +45,8 @@ export const encodeNegotiationMessage = (hostname: string, domain: string) => {
   buffer.writeUInt32LE(0x20, offset);
   offset += 4;
 
-  buffer.write(hostname, 0x20, hostnameLength, 'ascii');
-  buffer.write(domain, domainOffset, domainLength, 'ascii');
+  buffer.write(hostname, 0x20, hostnameLength, "ascii");
+  buffer.write(domain, domainOffset, domainLength, "ascii");
 
   return buffer;
 };
@@ -54,13 +54,13 @@ export const encodeNegotiationMessage = (hostname: string, domain: string) => {
 export const decodeNegotiationMessage = (buffer: Buffer) => {
   let offset = 0;
 
-  const protocol = buffer.slice(0, 7).toString('ascii');
-  if (protocol !== 'NTLMSSP' || buffer.readInt8(7) !== 0x00)
-    throw new Error('ntlmssp_header_not_found');
+  const protocol = buffer.slice(0, 7).toString("ascii");
+  if (protocol !== "NTLMSSP" || buffer.readInt8(7) !== 0x00)
+    throw new Error("ntlmssp_header_not_found");
   offset += 8;
 
   const type = buffer.readUInt32LE(offset);
-  if (type !== 0x01) throw new Error('ntlmssp_type_is_not_one');
+  if (type !== 0x01) throw new Error("ntlmssp_type_is_not_one");
   offset += 4;
 
   const negotiateFlags = buffer.readUInt32LE(offset);
@@ -82,15 +82,15 @@ export const decodeNegotiationMessage = (buffer: Buffer) => {
 
   const domain = buffer
     .slice(domainOffset, domainOffset + domainLength)
-    .toString('ascii');
+    .toString("ascii");
   const hostname = buffer
     .slice(hostnameOffset, hostnameOffset + hostnameLength)
-    .toString('ascii');
+    .toString("ascii");
 
   return {
     negotiateFlags,
     domain,
-    hostname
+    hostname,
   };
 };
 
@@ -98,7 +98,7 @@ export const encodeChallengeMessage = (negotiateFlags: number) => {
   let offset = 0;
   const buffer = Buffer.alloc(64);
 
-  buffer.write('NTLMSSP', offset, 7, 'ascii');
+  buffer.write("NTLMSSP", offset, 7, "ascii");
   offset += 7;
   buffer.writeUInt8(0, offset);
   offset += 1;
@@ -130,13 +130,13 @@ export const encodeChallengeMessage = (negotiateFlags: number) => {
 export const decodeChallengeMessage = (buffer: Buffer) => {
   let offset = 0;
 
-  const protocol = buffer.slice(0, 7).toString('ascii');
-  if (protocol !== 'NTLMSSP' || buffer.readInt8(7) !== 0x00)
-    throw new Error('ntlmssp_header_not_found');
+  const protocol = buffer.slice(0, 7).toString("ascii");
+  if (protocol !== "NTLMSSP" || buffer.readInt8(7) !== 0x00)
+    throw new Error("ntlmssp_header_not_found");
   offset += 8;
 
   const type = buffer.readUInt32LE(offset);
-  if (type !== 0x02) throw new Error('ntlmssp_type_is_not_two');
+  if (type !== 0x02) throw new Error("ntlmssp_type_is_not_two");
   offset += 4;
 
   const targetNameLength = buffer.readUInt16LE(offset);
@@ -180,9 +180,9 @@ export const encodeAuthenticationMessage = (
   const lmResponse = createResponse(lmHash, nonce);
   const ntResponse = createResponse(ntHash, nonce);
 
-  const usernameLength = Buffer.byteLength(username, 'ucs2');
-  const hostnameLength = Buffer.byteLength(hostname, 'ucs2');
-  const domainLength = Buffer.byteLength(domain, 'ucs2');
+  const usernameLength = Buffer.byteLength(username, "ucs2");
+  const hostnameLength = Buffer.byteLength(hostname, "ucs2");
+  const domainLength = Buffer.byteLength(domain, "ucs2");
   const lmResponseLength = 0x18;
   const ntResponseLength = 0x18;
 
@@ -202,7 +202,7 @@ export const encodeAuthenticationMessage = (
     ntResponseLength;
   const buffer = Buffer.alloc(messageLength);
 
-  buffer.write('NTLMSSP', offset, 7, 'ascii'); // byte protocol[8];
+  buffer.write("NTLMSSP", offset, 7, "ascii"); // byte protocol[8];
   offset += 7;
   buffer.writeUInt8(0, offset);
   offset++;
@@ -270,9 +270,9 @@ export const encodeAuthenticationMessage = (
   buffer.writeUInt32LE(negotiateFlags, offset);
   offset += 4;
 
-  buffer.write(domain, domainOffset, domainLength, 'ucs2');
-  buffer.write(username, usernameOffset, usernameLength, 'ucs2');
-  buffer.write(hostname, hostnameOffset, hostnameLength, 'ucs2');
+  buffer.write(domain, domainOffset, domainLength, "ucs2");
+  buffer.write(username, usernameOffset, usernameLength, "ucs2");
+  buffer.write(hostname, hostnameOffset, hostnameLength, "ucs2");
   lmResponse.copy(buffer, lmResponseOffset, 0, lmResponseLength);
   ntResponse.copy(buffer, ntResponseOffset, 0, ntResponseLength);
 
@@ -300,10 +300,10 @@ const bytes2binaryArray = (buf: Buffer): number[] => {
     C: [1, 1, 0, 0],
     D: [1, 1, 0, 1],
     E: [1, 1, 1, 0],
-    F: [1, 1, 1, 1]
+    F: [1, 1, 1, 1],
   };
 
-  const hexString = buf.toString('hex').toUpperCase();
+  const hexString = buf.toString("hex").toUpperCase();
   let array: number[] = [];
   for (let i = 0; i < hexString.length; i++) {
     const hexchar = hexString.charAt(i);
@@ -314,22 +314,22 @@ const bytes2binaryArray = (buf: Buffer): number[] => {
 
 const binaryArray2bytes = (array: number[]): Buffer => {
   const binary2hex = {
-    '0000': 0,
-    '0001': 1,
-    '0010': 2,
-    '0011': 3,
-    '0100': 4,
-    '0101': 5,
-    '0110': 6,
-    '0111': 7,
-    '1000': 8,
-    '1001': 9,
-    '1010': 'A',
-    '1011': 'B',
-    '1100': 'C',
-    '1101': 'D',
-    '1110': 'E',
-    '1111': 'F'
+    "0000": 0,
+    "0001": 1,
+    "0010": 2,
+    "0011": 3,
+    "0100": 4,
+    "0101": 5,
+    "0110": 6,
+    "0111": 7,
+    "1000": 8,
+    "1001": 9,
+    "1010": "A",
+    "1011": "B",
+    "1100": "C",
+    "1101": "D",
+    "1110": "E",
+    "1111": "F",
   };
 
   const bufArray: Buffer[] = [];
@@ -338,20 +338,20 @@ const binaryArray2bytes = (array: number[]): Buffer => {
     if (i + 7 > array.length) break;
 
     const binString1 =
-      '' + array[i] + '' + array[i + 1] + '' + array[i + 2] + '' + array[i + 3];
+      "" + array[i] + "" + array[i + 1] + "" + array[i + 2] + "" + array[i + 3];
     const binString2 =
-      '' +
+      "" +
       array[i + 4] +
-      '' +
+      "" +
       array[i + 5] +
-      '' +
+      "" +
       array[i + 6] +
-      '' +
+      "" +
       array[i + 7];
     const hexchar1 = binary2hex[binString1];
     const hexchar2 = binary2hex[binString2];
 
-    const buf = Buffer.from(hexchar1 + '' + hexchar2, 'hex');
+    const buf = Buffer.from(hexchar1 + "" + hexchar2, "hex");
     bufArray.push(buf);
   }
 
@@ -374,10 +374,10 @@ const insertZerosEvery7Bits = (buf: Buffer): Buffer => {
 const createLmHash = (password: string): Buffer => {
   // fix the password length to 14 bytes
   password = password.toUpperCase();
-  const passwordBytes = Buffer.from(password, 'ascii');
+  const passwordBytes = Buffer.from(password, "ascii");
 
   const passwordBytesPadded = Buffer.alloc(14);
-  passwordBytesPadded.fill('\0');
+  passwordBytesPadded.fill("\0");
   let sourceEnd = 14;
   if (passwordBytes.length < 14) sourceEnd = passwordBytes.length;
   passwordBytes.copy(passwordBytesPadded, 0, 0, sourceEnd);
@@ -388,8 +388,8 @@ const createLmHash = (password: string): Buffer => {
 
   function encrypt(buf) {
     const key = insertZerosEvery7Bits(buf);
-    const des = desjs.DES.create({ type: 'encrypt', key: key });
-    const magicKey = Buffer.from('KGS!@#$%', 'ascii'); // page 57 in [MS-NLMP]
+    const des = desjs.DES.create({ type: "encrypt", key: key });
+    const magicKey = Buffer.from("KGS!@#$%", "ascii"); // page 57 in [MS-NLMP]
     const encrypted = des.update(magicKey);
     return Buffer.from(encrypted);
   }
@@ -401,7 +401,7 @@ const createLmHash = (password: string): Buffer => {
 };
 
 const createNtHash = (password: string): Buffer => {
-  const buf = Buffer.from(password, 'utf16le');
+  const buf = Buffer.from(password, "utf16le");
   const md4 = jsmd4.create();
   md4.update(buf);
   return Buffer.from(md4.digest());
@@ -410,26 +410,26 @@ const createNtHash = (password: string): Buffer => {
 const createResponse = (hash: Buffer, nonce: Buffer) => {
   // padding with zeros to make the hash 21 bytes long
   const passHashPadded = Buffer.alloc(21);
-  passHashPadded.fill('\0');
+  passHashPadded.fill("\0");
   hash.copy(passHashPadded, 0, 0, hash.length);
 
   const resArray = [];
 
   const des1 = desjs.DES.create({
-    type: 'encrypt',
-    key: insertZerosEvery7Bits(passHashPadded.slice(0, 7))
+    type: "encrypt",
+    key: insertZerosEvery7Bits(passHashPadded.slice(0, 7)),
   });
   resArray.push(Buffer.from(des1.update(nonce.slice(0, 8))));
 
   const des2 = desjs.DES.create({
-    type: 'encrypt',
-    key: insertZerosEvery7Bits(passHashPadded.slice(7, 14))
+    type: "encrypt",
+    key: insertZerosEvery7Bits(passHashPadded.slice(7, 14)),
   });
   resArray.push(Buffer.from(des2.update(nonce.slice(0, 8))));
 
   const des3 = desjs.DES.create({
-    type: 'encrypt',
-    key: insertZerosEvery7Bits(passHashPadded.slice(14, 21))
+    type: "encrypt",
+    key: insertZerosEvery7Bits(passHashPadded.slice(14, 21)),
   });
   resArray.push(Buffer.from(des3.update(nonce.slice(0, 8))));
 
