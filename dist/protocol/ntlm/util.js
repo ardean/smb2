@@ -5,8 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateServerChallenge = exports.encodeAuthenticationMessage = exports.decodeChallengeMessage = exports.encodeChallengeMessage = exports.decodeNegotiationMessage = exports.encodeNegotiationMessage = void 0;
 const crypto_1 = __importDefault(require("crypto"));
-const httpntlm_1 = __importDefault(require("httpntlm"));
 const des_js_1 = __importDefault(require("des.js"));
+const js_md4_1 = __importDefault(require("js-md4"));
 const NegotiateFlag_1 = __importDefault(require("./NegotiateFlag"));
 exports.encodeNegotiationMessage = (hostname, domain) => {
     hostname = hostname.toUpperCase();
@@ -221,22 +221,6 @@ exports.encodeAuthenticationMessage = (username, hostname, domain, nonce, passwo
 exports.generateServerChallenge = () => {
     return crypto_1.default.randomBytes(8);
 };
-const createLmHash = (text) => httpntlm_1.default.ntlm.create_LM_hashed_password(text);
-const createNtHash = (str) => httpntlm_1.default.ntlm.create_NT_hashed_password(str);
-// const createResponse = (hash: Buffer, nonce: Buffer): Buffer =>
-//   httpntlm.ntlm.calc_resp(hash, nonce);
-// const createResponse = (hash: Buffer, nonce: Buffer) => {
-//   const buffer = Buffer.alloc(24);
-//   for (let index = 0; index < 3; index++) {
-//     const keyBuffer = fixOddParity(
-//       createDESKey(hash.slice(index * 7, index * 7 + 7))
-//     );
-//     const cipher = crypto.createCipheriv('DES-ECB', keyBuffer, '');
-//     const string = cipher.update(nonce.toString('binary'), 'binary', 'binary');
-//     buffer.write(string, index * 8, index * 8 + 8, 'binary');
-//   }
-//   return buffer;
-// };
 const bytes2binaryArray = (buf) => {
     const hex2binary = {
         0: [0, 0, 0, 0],
@@ -313,6 +297,36 @@ const insertZerosEvery7Bits = (buf) => {
         }
     }
     return binaryArray2bytes(newBinaryArray);
+};
+const createLmHash = (password) => {
+    // fix the password length to 14 bytes
+    password = password.toUpperCase();
+    const passwordBytes = Buffer.from(password, 'ascii');
+    const passwordBytesPadded = Buffer.alloc(14);
+    passwordBytesPadded.fill('\0');
+    let sourceEnd = 14;
+    if (passwordBytes.length < 14)
+        sourceEnd = passwordBytes.length;
+    passwordBytes.copy(passwordBytesPadded, 0, 0, sourceEnd);
+    // split into 2 parts of 7 bytes:
+    const firstPart = passwordBytesPadded.slice(0, 7);
+    const secondPart = passwordBytesPadded.slice(7);
+    function encrypt(buf) {
+        const key = insertZerosEvery7Bits(buf);
+        const des = des_js_1.default.DES.create({ type: 'encrypt', key: key });
+        const magicKey = Buffer.from('KGS!@#$%', 'ascii'); // page 57 in [MS-NLMP]
+        const encrypted = des.update(magicKey);
+        return Buffer.from(encrypted);
+    }
+    const firstPartEncrypted = encrypt(firstPart);
+    const secondPartEncrypted = encrypt(secondPart);
+    return Buffer.concat([firstPartEncrypted, secondPartEncrypted]);
+};
+const createNtHash = (password) => {
+    const buf = Buffer.from(password, 'utf16le');
+    const md4 = js_md4_1.default.create();
+    md4.update(buf);
+    return Buffer.from(md4.digest());
 };
 const createResponse = (hash, nonce) => {
     // padding with zeros to make the hash 21 bytes long

@@ -1,6 +1,6 @@
 import crypto from 'crypto';
-import httpntlm from 'httpntlm';
 import desjs from 'des.js';
+import jsmd4 from 'js-md4';
 import NegotiateFlag from './NegotiateFlag';
 
 export const encodeNegotiationMessage = (hostname: string, domain: string) => {
@@ -283,27 +283,6 @@ export const generateServerChallenge = () => {
   return crypto.randomBytes(8);
 };
 
-const createLmHash = (text: string): Buffer =>
-  httpntlm.ntlm.create_LM_hashed_password(text);
-
-const createNtHash = (str: string): Buffer =>
-  httpntlm.ntlm.create_NT_hashed_password(str);
-
-// const createResponse = (hash: Buffer, nonce: Buffer): Buffer =>
-//   httpntlm.ntlm.calc_resp(hash, nonce);
-
-// const createResponse = (hash: Buffer, nonce: Buffer) => {
-//   const buffer = Buffer.alloc(24);
-//   for (let index = 0; index < 3; index++) {
-//     const keyBuffer = fixOddParity(
-//       createDESKey(hash.slice(index * 7, index * 7 + 7))
-//     );
-//     const cipher = crypto.createCipheriv('DES-ECB', keyBuffer, '');
-//     const string = cipher.update(nonce.toString('binary'), 'binary', 'binary');
-//     buffer.write(string, index * 8, index * 8 + 8, 'binary');
-//   }
-//   return buffer;
-// };
 const bytes2binaryArray = (buf: Buffer): number[] => {
   const hex2binary = {
     0: [0, 0, 0, 0],
@@ -390,6 +369,42 @@ const insertZerosEvery7Bits = (buf: Buffer): Buffer => {
     }
   }
   return binaryArray2bytes(newBinaryArray);
+};
+
+const createLmHash = (password: string): Buffer => {
+  // fix the password length to 14 bytes
+  password = password.toUpperCase();
+  const passwordBytes = Buffer.from(password, 'ascii');
+
+  const passwordBytesPadded = Buffer.alloc(14);
+  passwordBytesPadded.fill('\0');
+  let sourceEnd = 14;
+  if (passwordBytes.length < 14) sourceEnd = passwordBytes.length;
+  passwordBytes.copy(passwordBytesPadded, 0, 0, sourceEnd);
+
+  // split into 2 parts of 7 bytes:
+  const firstPart = passwordBytesPadded.slice(0, 7);
+  const secondPart = passwordBytesPadded.slice(7);
+
+  function encrypt(buf) {
+    const key = insertZerosEvery7Bits(buf);
+    const des = desjs.DES.create({ type: 'encrypt', key: key });
+    const magicKey = Buffer.from('KGS!@#$%', 'ascii'); // page 57 in [MS-NLMP]
+    const encrypted = des.update(magicKey);
+    return Buffer.from(encrypted);
+  }
+
+  const firstPartEncrypted = encrypt(firstPart);
+  const secondPartEncrypted = encrypt(secondPart);
+
+  return Buffer.concat([firstPartEncrypted, secondPartEncrypted]);
+};
+
+const createNtHash = (password: string): Buffer => {
+  const buf = Buffer.from(password, 'utf16le');
+  const md4 = jsmd4.create();
+  md4.update(buf);
+  return Buffer.from(md4.digest());
 };
 
 const createResponse = (hash: Buffer, nonce: Buffer) => {

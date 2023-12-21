@@ -3,7 +3,7 @@
   "description": "A SMB2 implementation in TypeScript",
   "repository": "https://github.com/awo00/smb2",
   "bugs": "https://github.com/awo00/smb2/issues",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "author": "awo00",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "des.js": "^1.1.0",
-    "httpntlm": "^1.8.13",
+    "js-md4": "^0.3.2",
     "moment-timezone": "^0.5.31"
   },
   "devDependencies": {
