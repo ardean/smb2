@@ -29,6 +29,8 @@
     "node": ">=10.0.0"
   },
   "dependencies": {
+    "des.js": "^1.1.0",
+    "js-md4": "^0.3.2",
     "moment-timezone": "^0.5.31"
   },
   "devDependencies": {
