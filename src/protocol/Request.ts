@@ -1,10 +1,10 @@
 import Response from "./Response";
 
-export default abstract class Request {
-  response?: Response;
+export default abstract class Request<T extends {}> {
+  response?: Response<T>;
 
   constructor(
-    public header: any = {},
+    public header: T = {} as T,
     public body: any = {}
   ) { }
 

@@ -10,9 +10,9 @@ import Dialect from "../protocol/smb2/Dialect";
 import * as protocolIds from "../protocol/protocolIds";
 
 interface Client {
-  on(event: "request", callback: (req: Request) => void): this;
+  on(event: "request", callback: (req: Request<any>) => void): this;
 
-  once(event: "request", callback: (req: Request) => void): this;
+  once(event: "request", callback: (req: Request<any>) => void): this;
 }
 
 class Client extends EventEmitter {
@@ -57,7 +57,7 @@ class Client extends EventEmitter {
     }
   }
 
-  send(response: Response) {
+  send(response: Response<any>) {
     const buffer = response.serialize();
     this.socket.write(buffer);
   }

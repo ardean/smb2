@@ -3,12 +3,11 @@ import Packet from "./Packet";
 import HeaderFlag from "./HeaderFlag";
 import ProtocolResponse from "../Response";
 
-export default class Response extends ProtocolResponse {
-  declare header: Header;
+export default class Response extends ProtocolResponse<Header> {
   typeName: string;
   data: any;
 
-  constructor(header?: Header, body?: any) {
+  constructor(header: Header, body?: any) {
     super(header, body);
 
     this.header.flags |= HeaderFlag.Response;

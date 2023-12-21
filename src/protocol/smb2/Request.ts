@@ -2,12 +2,11 @@ import Header from "./Header";
 import Packet from "./Packet";
 import ProtocolRequest from "../Request";
 
-export default class Request extends ProtocolRequest {
-  declare header: Header;
+export default class Request extends ProtocolRequest<Header> {
   typeName: string;
   data: any;
 
-  constructor(header?: Header, body?: any) {
+  constructor(header: Header, body?: any) {
     super(header, body);
 
     this.typeName = Packet.getPacketTypeName(this.header.type);
