@@ -1,16 +1,16 @@
 {
-  "name": "@stifani/smb2",
+  "name": "@awo00/smb2",
   "description": "A SMB2 implementation in TypeScript",
-  "repository": "https://github.com/ardean/smb2",
-  "bugs": "https://github.com/ardean/smb2/issues",
-  "version": "0.3.0",
+  "repository": "https://github.com/awo00/smb2",
+  "bugs": "https://github.com/awo00/smb2/issues",
+  "version": "0.4.0",
   "author": "ardean",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "license": "MIT",
   "scripts": {
     "start": "nodemon",
-    "build": "rm -rf dist && tsc",
+    "build": "tsc --build",
     "lint": "tslint --project ."
   },
   "files": [
@@ -26,7 +26,7 @@
     "file-sharing"
   ],
   "engines": {
-    "node": ">=10.0.0"
+    "node": ">=18"
   },
   "dependencies": {
     "moment-timezone": "^0.5.31"
