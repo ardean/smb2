@@ -4,6 +4,7 @@ import ProtocolRequest from "../Request";
 
 export default class Request extends ProtocolRequest {
   header: Header;
+  body: Record<string | number | symbol, unknown>;
 
   typeName: string;
   data: any;

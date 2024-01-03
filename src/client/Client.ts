@@ -38,7 +38,7 @@ class Client extends EventEmitter {
   port: number = 445;
 
   connectTimeout: number = 5 * 1000;
-  connectTimeoutId: NodeJS.Timer;
+  connectTimeoutId: NodeJS.Timeout;
 
   requestTimeout: number = 5 * 1000;
   requestTimeoutIdMap = new Map<bigint, NodeJS.Timeout>();

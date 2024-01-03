@@ -26,7 +26,7 @@ export const parseStructure = (buffer: Buffer, structure: Structure) => {
       if (typeof structureField.count === "undefined") throw new Error(`invalid_count_field_name: ${structureField.countFieldName}`);
     }
 
-    const value = buffer.slice(offset, offset + (size * structureField.count));
+    const value = buffer.subarray(offset, offset + (size * structureField.count));
     data[structureFieldName] = parseValue(value, structureField);
     offset += size * structureField.count;
   }
@@ -178,11 +178,11 @@ export const serializeValue = (value: Value, structureField: StructureField): Bu
   if (structureField.count > 1 && Array.isArray(value)) {
     const buffers = value.map(listEntry => serializeValue(listEntry, { ...structureField, count: 1 }));
     return Buffer.concat(buffers);
-  }
+  } else 
   if (Buffer.isBuffer(value)) return value;
   if (typeof value === "string") return serializeString(value, structureField);
 
-  const bignumberValue = BigInt(value);
+  const bignumberValue = BigInt(value as number | bigint);
   const result = Buffer.allocUnsafe(structureField.size);
   for (let index = 0; index < structureField.size; index++) {
     const offset = BigInt(index * 8);

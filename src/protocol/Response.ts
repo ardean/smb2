@@ -4,8 +4,8 @@ export default abstract class Response {
   request?: Request;
 
   constructor(
-    public header: any = {},
-    public body: any = {}
+    header: any = {},
+    body: any = {}
   ) { }
 
   abstract serialize(): Buffer;

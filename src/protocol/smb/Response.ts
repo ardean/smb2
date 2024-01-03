@@ -4,6 +4,7 @@ import ProtocolResponse from "../Response";
 
 export default class Response extends ProtocolResponse {
   header: Header;
+  body: Record<string | number | symbol, unknown>;
 
   static parse(buffer: Buffer) {
     const { header, body } = Packet.parse(buffer);
