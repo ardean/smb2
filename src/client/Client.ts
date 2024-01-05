@@ -197,12 +197,11 @@ class Client extends EventEmitter {
   }
 
   onError = (err: Error) => {
-    this.emit("error", err);
+    console.error(err);
   }
 
   onClose = (hadError: boolean) => {
     this.connected = false;
-    this.emit("error", new Error("client_closed"));
   }
 
   async echo() {
